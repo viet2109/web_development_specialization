@@ -12,5 +12,5 @@ export interface UserLoginResponse {
 export interface Route {
   path: string;
   page: FC<any>;
-  layout: FC<any>;
+  layout?: FC<any>;
 }

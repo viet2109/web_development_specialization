@@ -160,3 +160,33 @@ html {
 body {
   @apply font-poppins font-normal break-all;
 }
+.layout-container {
+  display: flex;
+  height: 100vh; 
+}
+
+.left-bar {
+  flex: 1;
+  min-width: 250px;
+  background-color: #f4f4f4; 
+}
+
+.main-content {
+  flex: 2;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.right-bar {
+  flex: 1;
+  min-width: 250px;
+  background-color: #f4f4f4;
+}
+
+
+@media (max-width: 768px) {
+  .left-bar,
+  .right-bar {
+    display: none;
+  }
+}
