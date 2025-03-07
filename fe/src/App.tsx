@@ -7,30 +7,22 @@ import { RootState } from "./redux/store";
 function App() {
   const user = useSelector((state: RootState) => state.auth.user);
   return (
-    <Router>
+    <Router>  
       <Routes>
         {publicRoutes.map((route, index) => (
           <Route
             key={index}
             path={route.path}
-            element={
-              <route.layout>
-                <route.page />
-              </route.layout>
-            }
+            element={route.layout ? <route.layout><route.page /></route.layout> : <route.page />}
+
           ></Route>
         ))}
         {privateRoutes.map((route, index) => (
           <Route
             key={index}
             path={route.path}
-            element={
-              <PrivateRoute isAuth={!!user}>
-                <route.layout>
-                  <route.page />
-                </route.layout>
-              </PrivateRoute>
-            }
+            element={route.layout ? <route.layout><route.page /></route.layout> : <route.page />}
+
           ></Route>
         ))}
       </Routes>

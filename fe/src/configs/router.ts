@@ -1,7 +1,7 @@
 const routers = {
   home: "/",
   login: "/login",
-  signUp: "/signup",
+  register: "/register",
   notFound: "*",
 };
 

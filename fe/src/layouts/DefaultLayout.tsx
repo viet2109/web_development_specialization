@@ -5,25 +5,28 @@ import Navbar from "../components/navBar/NavBar";
 import LeftBar from "../components/leftBar/LeftBar";
 import RightBar from "../components/rightBar/RightBar";
 
+
 interface Props {
   children: ReactNode;
 }
 
-function DefaultLayout({ children }: Props) {
+function DefaultLayout(props: Props) {
+  const { children } = props;
+
   return (
     <div>
-      <Header />
-      <Navbar />
-      <div className="layout-container">
-        <div className="left-bar">
-          <LeftBar />
-        </div>
-        <main className="main-content">{children}</main>
-        <div className="right-bar">
-          <RightBar />
-        </div>
+   
+    <Navbar />
+    <div className="layout-container">
+      <div className="left-bar">
+        <LeftBar />
       </div>
-      <Footer />
+      <main className="main-content">{children}</main>
+      <div className="right-bar">
+        <RightBar />
+      </div>
+    </div>
+    
     </div>
   );
 }
