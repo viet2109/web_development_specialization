@@ -2,9 +2,12 @@ package com.studyapp.be.services;
 
 import com.studyapp.be.dao.UserDao;
 import com.studyapp.be.dao.VerificationEmailTokenDao;
+import com.studyapp.be.dto.request.UserLoginRequestDto;
 import com.studyapp.be.dto.request.UserSignUpRequest;
+import com.studyapp.be.dto.response.UserLoginResponseDto;
 import com.studyapp.be.entities.User;
 import com.studyapp.be.entities.VerificationEmailToken;
+import com.studyapp.be.enums.ActiveStatus;
 import com.studyapp.be.enums.AppError;
 import com.studyapp.be.enums.UserStatus;
 import com.studyapp.be.exceptions.AppException;
@@ -25,6 +28,19 @@ public class AuthService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final VerificationEmailTokenDao verificationEmailTokenDao;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
+        User user = userDao.findByEmail(userLoginRequestDto.getEmail()).orElseThrow(() -> new AppException(AppError.AUTH_TOKEN_INVALID));
+        if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword()) || user.getStatus() != UserStatus.ACTIVE) {
+            throw new AppException(AppError.AUTH_INVALID_CREDENTIALS);
+        }
+        user.setActiveStatus(ActiveStatus.ONLINE);
+        user.setLastActive(LocalDateTime.now());
+        UserLoginResponseDto.UserInfo userInfo = userMapper.entityToDto(user);
+        return UserLoginResponseDto.builder().user(userInfo).accessToken(jwtTokenProvider.generateToken(userInfo.getEmail())).build();
+    }
+
 
     @Transactional
     public User signUp(UserSignUpRequest dto) {
