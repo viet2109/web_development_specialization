@@ -1,13 +1,16 @@
 package com.studyapp.be.entities;
 
 import com.studyapp.be.enums.ActiveStatus;
+import com.studyapp.be.enums.Gender;
 import com.studyapp.be.enums.Role;
 import com.studyapp.be.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
@@ -15,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 public class User {
 
     @Id
@@ -31,6 +35,8 @@ public class User {
     @ElementCollection
     private Set<Role> roles;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserStatus status;
 
     @CreationTimestamp
@@ -39,14 +45,26 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserDetails details;
-
     private LocalDateTime lastActive;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ActiveStatus activeStatus;
+
+    private String firstName;
+    private String lastName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
+
+    @Column(unique = true)
+    private String phone;
+    private LocalDate birthDate;
+    private String bio;
+
+    @OneToOne
+    private File avatar;
 
     @PrePersist
     protected void onCreate() {
