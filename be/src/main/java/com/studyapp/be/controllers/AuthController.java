@@ -1,5 +1,6 @@
 package com.studyapp.be.controllers;
 
+import com.studyapp.be.dto.request.UserLoginRequestDto;
 import com.studyapp.be.dto.request.UserSignUpRequest;
 import com.studyapp.be.entities.User;
 import com.studyapp.be.services.AuthService;
@@ -20,8 +21,8 @@ public class AuthController {
     private final EmailService emailService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login() {
-        return ResponseEntity.ok("Login");
+    public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto) {
+        return ResponseEntity.ok(authService.login(userLoginRequestDto));
     }
 
     @PostMapping("/signup")
