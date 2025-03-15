@@ -43,24 +43,24 @@ public class AuthService {
 
 
     @Transactional
-    public User signUp(UserSignUpRequest dto) {
+    public UserLoginResponseDto.UserInfo signUp(UserSignUpRequest dto) {
         User existUser = userDao.findByEmail(dto.getEmail()).orElse(null);
         if (existUser != null && existUser.getStatus() != UserStatus.INACTIVE) {
             throw new AppException(AppError.USER_EMAIL_ALREADY_EXISTS);
         } else if (existUser != null) {
-            return existUser;
+            return userMapper.entityToDto(existUser);
         }
         if (StringUtils.hasText(dto.getPhone()) || userDao.existsByPhone(dto.getPhone()))
             throw new AppException(AppError.USER_PHONE_ALREADY_EXISTS);
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user = userMapper.dtoToEntity(dto);
-        return userDao.save(user);
+        return userMapper.entityToDto(userDao.save(user));
     }
 
     @Transactional
-    public String createVerificationToken(User user) {
+    public String createVerificationToken(Long userId) {
         String token = UUID.randomUUID().toString();
-        verificationEmailTokenDao.save(VerificationEmailToken.builder().token(token).user(user).build());
+        verificationEmailTokenDao.save(VerificationEmailToken.builder().token(token).user(userDao.findById(userId).orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND))).build());
         return token;
     }
 
