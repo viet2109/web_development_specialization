@@ -43,6 +43,7 @@ public enum AppError {
 
     //File Errors
     FILE_NOT_FOUND("The file was not found", HttpStatus.NOT_FOUND),
+    FILE_UPLOAD_FAILED("The file was upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     //File Errors
     FRIEND_REQUEST_ALREADY_EXIST("The friend request has been sended", HttpStatus.CONFLICT),

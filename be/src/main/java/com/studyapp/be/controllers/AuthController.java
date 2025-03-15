@@ -2,7 +2,7 @@ package com.studyapp.be.controllers;
 
 import com.studyapp.be.dto.request.UserLoginRequestDto;
 import com.studyapp.be.dto.request.UserSignUpRequest;
-import com.studyapp.be.entities.User;
+import com.studyapp.be.dto.response.UserLoginResponseDto;
 import com.studyapp.be.services.AuthService;
 import com.studyapp.be.services.EmailService;
 import jakarta.validation.Valid;
@@ -26,13 +26,13 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid UserSignUpRequest userSignUpRequest) {
-        User user = authService.signUp(userSignUpRequest);
-        String verificationUrl = "http://localhost:8080/auth/verify?token=" + authService.createVerificationToken(user);
+    public ResponseEntity<UserLoginResponseDto.UserInfo> signup(@RequestBody @Valid UserSignUpRequest userSignUpRequest) {
+        UserLoginResponseDto.UserInfo user = authService.signUp(userSignUpRequest);
+        String verificationUrl = "http://localhost:8080/auth/verify?token=" + authService.createVerificationToken(user.getId());
         emailService.sendSimpleMessage(userSignUpRequest.getEmail(), "Verify account",
                 "Please click the link to verify account: " + verificationUrl);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(user);
     }
 
     @GetMapping("/verify")
