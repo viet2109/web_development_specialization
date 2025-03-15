@@ -18,8 +18,14 @@ public enum AppError {
 
     // User Errors
     USER_NOT_FOUND("The requested user was not found", HttpStatus.NOT_FOUND),
-    USER_ALREADY_EXISTS("The email is already registered", HttpStatus.CONFLICT),
+    USER_EMAIL_ALREADY_EXISTS("The email is already registered", HttpStatus.CONFLICT),
+    USER_PHONE_ALREADY_EXISTS("The phone is already registered", HttpStatus.CONFLICT),
     USER_PROFILE_NOT_UPDATED("Failed to update user profile", HttpStatus.BAD_REQUEST),
+
+    //VerificationEmailToken Errors
+    TOKEN_NOT_FOUND("The token was not found", HttpStatus.NOT_FOUND),
+    TOKEN_EXPIRED("Token has expired", HttpStatus.UNAUTHORIZED),
+
 
     // Message Errors
     MESSAGE_NOT_FOUND("The requested message was not found", HttpStatus.NOT_FOUND),
@@ -37,6 +43,7 @@ public enum AppError {
 
     //File Errors
     FILE_NOT_FOUND("The file was not found", HttpStatus.NOT_FOUND),
+    FILE_UPLOAD_FAILED("The file was upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     //File Errors
     FRIEND_REQUEST_ALREADY_EXIST("The friend request has been sended", HttpStatus.CONFLICT),

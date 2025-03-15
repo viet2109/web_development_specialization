@@ -1,14 +1,10 @@
 package com.studyapp.be.services;
 
-import com.studyapp.be.dao.UserDao;
-import com.studyapp.be.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -18,10 +14,10 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenProvider {
-    @Value("${jwt.secret}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration}")
+    @Value("${app.jwt.expiration}")
     private long jwtExpirationInMs;
 
 
