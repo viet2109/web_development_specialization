@@ -58,6 +58,7 @@ public class FileService {
         return "raw";
     }
 
+    @Transactional
     public void delete(Long id) {
         File file = fileDao.findById(id).orElseThrow(() -> new AppException(AppError.FILE_NOT_FOUND));
         try {

@@ -41,6 +41,9 @@ public enum AppError {
     REACTION_NOT_FOUND("The reaction was not found", HttpStatus.NOT_FOUND),
     REACTION_ALREADY_EXISTS("You has already reacted to this message", HttpStatus.CONFLICT),
 
+    //Post Errors
+    POST_NOT_FOUND("The post was not found", HttpStatus.NOT_FOUND),
+
     //File Errors
     FILE_NOT_FOUND("The file was not found", HttpStatus.NOT_FOUND),
     FILE_UPLOAD_FAILED("The file was upload failed", HttpStatus.INTERNAL_SERVER_ERROR),

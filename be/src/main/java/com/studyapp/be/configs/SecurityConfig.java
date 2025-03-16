@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests.requestMatchers("/auth/**").permitAll();
-                authorizeRequests.anyRequest().authenticated();
+                    authorizeRequests.requestMatchers("/ws/**", "/app/**", "/auth/**").permitAll();
+                    authorizeRequests.anyRequest().authenticated();
                 })
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
