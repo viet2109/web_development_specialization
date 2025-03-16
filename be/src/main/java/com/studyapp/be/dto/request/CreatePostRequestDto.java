@@ -13,9 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class CreatePostRequestDto {
-    @NotNull(message = "The userId must not be null")
-    private Long userId;
-
     @NotBlank(message = "The content must not be null")
     private String content;
     private Set<MultipartFile> files;

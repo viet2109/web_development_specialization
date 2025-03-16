@@ -3,6 +3,7 @@ package com.studyapp.be.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -31,6 +32,9 @@ public class Post {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reaction> reactions;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments;
 
     @ManyToOne
     private Post sharedPost;

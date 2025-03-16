@@ -1,6 +1,5 @@
 package com.studyapp.be.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,12 +24,21 @@ public class File {
 
     @Column(nullable = false)
     private String fileCloudId;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String path;
+
+    @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
     private Long size;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private User createdBy;
 
     @CreationTimestamp

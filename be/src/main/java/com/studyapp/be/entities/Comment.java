@@ -2,6 +2,7 @@ package com.studyapp.be.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,6 +11,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "comments")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Comment {
 
     @Id
@@ -38,7 +44,7 @@ public class Comment {
     private Post post;
 
     @OneToOne
-    private File attachment;
+    private CommentAttachment attachment;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
