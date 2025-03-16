@@ -1,39 +1,24 @@
 package com.studyapp.be.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@Table(name = "posts")
-@Setter
-@Getter
-public class Post {
-
+@Table(name = "reactions")
+public class Reaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User creator;
+    private User user;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<File> attachments;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Reaction> reactions;
-
-    @ManyToOne
-    private Post sharedPost;
+    @Column(nullable = false)
+    private String emoji;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
