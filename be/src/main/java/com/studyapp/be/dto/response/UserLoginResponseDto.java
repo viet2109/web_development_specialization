@@ -1,7 +1,6 @@
 package com.studyapp.be.dto.response;
 
 import com.studyapp.be.entities.File;
-import com.studyapp.be.entities.User;
 import com.studyapp.be.enums.ActiveStatus;
 import com.studyapp.be.enums.Gender;
 import lombok.AllArgsConstructor;

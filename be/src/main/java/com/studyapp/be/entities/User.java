@@ -5,8 +5,7 @@ import com.studyapp.be.enums.Gender;
 import com.studyapp.be.enums.Role;
 import com.studyapp.be.enums.UserStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,7 +15,10 @@ import java.util.Collections;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "phone"))
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class User {
@@ -32,7 +34,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
     @Enumerated(EnumType.STRING)
@@ -57,8 +59,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Gender gender;
-
-    @Column(unique = true)
     private String phone;
     private LocalDate birthDate;
     private String bio;

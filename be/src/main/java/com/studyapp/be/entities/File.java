@@ -1,6 +1,6 @@
 package com.studyapp.be.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.studyapp.be.listeners.FileListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EntityListeners(FileListener.class)
 public class File {
 
     @Id
@@ -25,13 +26,22 @@ public class File {
 
     @Column(nullable = false)
     private String fileCloudId;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String path;
+
+    @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
     private Long size;
 
     @ManyToOne
-    private User createdBy;
+    @JoinColumn(nullable = false)
+    private User creator;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
