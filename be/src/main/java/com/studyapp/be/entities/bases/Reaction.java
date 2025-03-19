@@ -1,28 +1,30 @@
-package com.studyapp.be.entities;
+package com.studyapp.be.entities.bases;
 
+import com.studyapp.be.entities.User;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
-public class Comment {
-
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+@Getter
+@Setter
+@Table(name = "reactions")
+public class Reaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String content;
 
     @ManyToOne
-    private Comment parent;
-
-    @ManyToOne
+    @JoinColumn(nullable = false)
     private User creator;
 
-    @ManyToOne
-    private Post post;
+    @Column(nullable = false)
+    private String emoji;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -18,7 +18,7 @@ public class UserSignUpRequest {
     @NotNull(message = "Gender must not be null")
     private Gender gender;
 
-    @Pattern(regexp = "/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\\b/", message = "Invalid phone number format")
+    @Pattern(regexp = "(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\\b", message = "Invalid phone number format")
     private String phone;
     private LocalDate birthDate;
 

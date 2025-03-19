@@ -1,6 +1,7 @@
 package com.studyapp.be.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,6 +10,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "posts")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Post {
 
     @Id
@@ -22,8 +28,17 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @OneToMany
-    private Set<File> files;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<File> attachments;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PostReaction> reactions;
+
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PostComment> comments;
+
+    @ManyToOne
+    private Post sharedPost;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

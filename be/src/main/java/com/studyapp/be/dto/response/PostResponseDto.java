@@ -1,23 +1,23 @@
 package com.studyapp.be.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Builder
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileResponseDto {
+@Getter
+@Setter
+public class PostResponseDto {
     private Long id;
-    private String name;
-    private String path;
-    private String type;
-    private Long size;
     private UserLoginResponseDto.UserInfo creator;
+    private String content;
+    private Set<FileResponseDto> attachments;
+    private Long totalReactions;
+    private PostResponseDto sharedPost;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private long totalComments;
 }

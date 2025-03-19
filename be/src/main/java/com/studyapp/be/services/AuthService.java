@@ -7,7 +7,6 @@ import com.studyapp.be.dto.request.UserSignUpRequest;
 import com.studyapp.be.dto.response.UserLoginResponseDto;
 import com.studyapp.be.entities.User;
 import com.studyapp.be.entities.VerificationEmailToken;
-import com.studyapp.be.enums.ActiveStatus;
 import com.studyapp.be.enums.AppError;
 import com.studyapp.be.enums.UserStatus;
 import com.studyapp.be.exceptions.AppException;
@@ -31,12 +30,10 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
-        User user = userDao.findByEmail(userLoginRequestDto.getEmail()).orElseThrow(() -> new AppException(AppError.AUTH_TOKEN_INVALID));
+        User user = userDao.findByEmail(userLoginRequestDto.getEmail()).orElseThrow(() -> new AppException(AppError.AUTH_INVALID_CREDENTIALS));
         if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword()) || user.getStatus() != UserStatus.ACTIVE) {
             throw new AppException(AppError.AUTH_INVALID_CREDENTIALS);
         }
-        user.setActiveStatus(ActiveStatus.ONLINE);
-        user.setLastActive(LocalDateTime.now());
         UserLoginResponseDto.UserInfo userInfo = userMapper.entityToDto(user);
         return UserLoginResponseDto.builder().user(userInfo).accessToken(jwtTokenProvider.generateToken(userInfo.getEmail())).build();
     }
@@ -50,7 +47,7 @@ public class AuthService {
         } else if (existUser != null) {
             return userMapper.entityToDto(existUser);
         }
-        if (StringUtils.hasText(dto.getPhone()) || userDao.existsByPhone(dto.getPhone()))
+        if (StringUtils.hasText(dto.getPhone()) && userDao.existsByPhone(dto.getPhone()))
             throw new AppException(AppError.USER_PHONE_ALREADY_EXISTS);
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user = userMapper.dtoToEntity(dto);

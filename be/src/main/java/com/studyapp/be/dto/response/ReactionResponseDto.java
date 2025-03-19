@@ -8,16 +8,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Builder
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileResponseDto {
+@Getter
+public class ReactionResponseDto {
     private Long id;
-    private String name;
-    private String path;
-    private String type;
-    private Long size;
     private UserLoginResponseDto.UserInfo creator;
+    private String emoji;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
