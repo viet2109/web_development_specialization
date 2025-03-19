@@ -1,7 +1,7 @@
 package com.studyapp.be.mappers;
 
 import com.studyapp.be.dto.response.ReactionResponseDto;
-import com.studyapp.be.entities.Reaction;
+import com.studyapp.be.entities.bases.Reaction;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

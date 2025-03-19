@@ -5,16 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class ReactionResponseDto {
+public class CommentAttachmentResponseDto {
     private Long id;
-    private UserLoginResponseDto.UserInfo creator;
-    private String emoji;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private FileResponseDto file;
+    private Set<ReactionResponseDto> reactions;
+    private Long totalReactions;
 }

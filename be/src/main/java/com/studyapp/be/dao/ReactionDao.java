@@ -1,7 +1,9 @@
 package com.studyapp.be.dao;
 
-import com.studyapp.be.entities.Reaction;
-import org.springframework.data.repository.CrudRepository;
+import com.studyapp.be.dao.bases.BaseReactionDao;
+import com.studyapp.be.entities.bases.Reaction;
+import org.springframework.stereotype.Repository;
 
-public interface ReactionDao extends CrudRepository<Reaction, Long> {
+@Repository
+public interface ReactionDao extends BaseReactionDao<Reaction, Long> {
 }

@@ -26,7 +26,6 @@ public enum AppError {
     TOKEN_NOT_FOUND("The token was not found", HttpStatus.NOT_FOUND),
     TOKEN_EXPIRED("Token has expired", HttpStatus.UNAUTHORIZED),
 
-
     // Message Errors
     MESSAGE_NOT_FOUND("The requested message was not found", HttpStatus.NOT_FOUND),
     MESSAGE_SEND_FAILED("Failed to send the message", HttpStatus.BAD_REQUEST),
@@ -40,6 +39,10 @@ public enum AppError {
     //Reaction Errors
     REACTION_NOT_FOUND("The reaction was not found", HttpStatus.NOT_FOUND),
     REACTION_ALREADY_EXISTS("You has already reacted to this message", HttpStatus.CONFLICT),
+
+    //Comment Errors
+    COMMENT_NOT_FOUND("The comment was not found", HttpStatus.NOT_FOUND),
+    COMMENT_ATTACHMENT_NOT_FOUND("The comment attachment was not found", HttpStatus.NOT_FOUND),
 
     //Post Errors
     POST_NOT_FOUND("The post was not found", HttpStatus.NOT_FOUND),

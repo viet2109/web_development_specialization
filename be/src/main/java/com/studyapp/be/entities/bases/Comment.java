@@ -1,21 +1,22 @@
-package com.studyapp.be.entities;
+package com.studyapp.be.entities.bases;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.studyapp.be.entities.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@Table(name = "comments")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
+@Table(name = "comments")
 public class Comment {
 
     @Id
@@ -26,24 +27,14 @@ public class Comment {
     private String content;
 
     @ManyToOne
-    @JsonIgnore
-    private Comment parent;
-
-    @OneToMany
-    private Set<Reaction> reactions;
-
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> children;
-
-    @ManyToOne
     @JoinColumn(nullable = false)
     private User creator;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Post post;
+    @JsonIgnore
+    private Comment parent;
 
-    @OneToOne
+    @OneToOne(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private CommentAttachment attachment;
 
     @CreationTimestamp

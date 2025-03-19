@@ -43,7 +43,7 @@ public class FileService {
         Map params = ObjectUtils.asMap("asset_folder", assetFolder, "resource_type", mimeType);
         try {
             Map result = storage.uploader().upload(file.getInputStream(), params);
-            File fileEntity = File.builder().createdBy(getUserFromRequest()).size(file.getSize()).fileCloudId(result.get("public_id").toString()).name(file.getOriginalFilename()).type(mimeType).path(result.get("secure_url").toString()).build();
+            File fileEntity = File.builder().creator(getUserFromRequest()).size(file.getSize()).fileCloudId(result.get("public_id").toString()).name(file.getOriginalFilename()).type(mimeType).path(result.get("secure_url").toString()).build();
             log.info("Upload file id: {}", fileEntity.getFileCloudId());
             return fileMapper.entityToDto(fileDao.save(fileEntity));
         } catch (IOException exception) {
@@ -70,6 +70,9 @@ public class FileService {
     @Transactional
     public void delete(Long id) {
         File file = fileDao.findById(id).orElseThrow(() -> new AppException(AppError.FILE_NOT_FOUND));
+        if (!file.getCreator().getId().equals(getUserFromRequest().getId())) {
+            throw new AppException(AppError.AUTH_ACCESS_DENIED);
+        }
         try {
             storage.api().deleteResources(Collections.singletonList(file.getFileCloudId()), ObjectUtils.asMap("type", "upload", "resource_type", file.getType()));
             fileDao.delete(file);
@@ -79,5 +82,6 @@ public class FileService {
             throw new AppException(AppError.FILE_UPLOAD_FAILED);
         }
     }
+
 
 }
