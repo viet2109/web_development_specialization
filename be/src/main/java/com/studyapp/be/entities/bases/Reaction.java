@@ -1,5 +1,6 @@
-package com.studyapp.be.entities;
+package com.studyapp.be.entities.bases;
 
+import com.studyapp.be.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,12 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reactions")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
+@Table(name = "reactions")
 public class Reaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class Reaction {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User user;
+    private User creator;
 
     @Column(nullable = false)
     private String emoji;

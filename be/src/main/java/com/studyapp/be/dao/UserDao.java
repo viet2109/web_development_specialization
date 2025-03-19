@@ -9,8 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserDao extends CrudRepository<User, Long> {
     Optional<User> findByEmail(String email);
-
-    boolean existsByEmail(String email);
-
     boolean existsByPhone(String phone);
 }

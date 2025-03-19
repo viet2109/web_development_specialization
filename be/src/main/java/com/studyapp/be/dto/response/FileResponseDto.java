@@ -17,7 +17,7 @@ public class FileResponseDto {
     private String path;
     private String type;
     private Long size;
-    private UserLoginResponseDto.UserInfo createdBy;
+    private UserLoginResponseDto.UserInfo creator;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

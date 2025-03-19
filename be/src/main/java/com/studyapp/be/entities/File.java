@@ -1,5 +1,6 @@
 package com.studyapp.be.entities;
 
+import com.studyapp.be.listeners.FileListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EntityListeners(FileListener.class)
 public class File {
 
     @Id
@@ -39,7 +41,7 @@ public class File {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User createdBy;
+    private User creator;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
