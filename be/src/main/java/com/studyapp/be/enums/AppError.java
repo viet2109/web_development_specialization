@@ -51,9 +51,12 @@ public enum AppError {
     FILE_NOT_FOUND("The file was not found", HttpStatus.NOT_FOUND),
     FILE_UPLOAD_FAILED("The file was upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    //File Errors
+    //Friendship request Errors
+    FRIEND_REQUEST_NOT_FOUND("The friend request not founded", HttpStatus.NOT_FOUND),
     FRIEND_REQUEST_ALREADY_EXIST("The friend request has been sended", HttpStatus.CONFLICT),
 
+    //Friendship Errors
+    FRIENDSHIP_NOT_FOUND("The friendship not founded", HttpStatus.NOT_FOUND),
 
     // General Errors
     INTERNAL_SERVER_ERROR("An unexpected error occurred on the server", HttpStatus.INTERNAL_SERVER_ERROR),
