@@ -2,17 +2,19 @@ package com.studyapp.be.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "friendship_requests")
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class FriendShipRequest {
+@Table(name = "user_fcm_tokens", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "token"}))
+public class UserFcmToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,11 +22,14 @@ public class FriendShipRequest {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User sender;
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private User receiver;
+    @Column(nullable = false)
+    private String token;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
