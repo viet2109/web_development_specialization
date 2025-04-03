@@ -14,7 +14,7 @@ const Register = () => {
   const [firstName, setfirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [gender, setGender] = useState<Gender>("MALE");
-  const [error, setError] = useState<string>("");
+  
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
