@@ -21,7 +21,8 @@ const Login = () => {
     setLoading(true);
     try {
       const data = await login(email, password);
-      
+      localStorage.setItem("token", data.accessToken); 
+
       dispatch(loginSuccess({ token: data.accessToken, user: data.user }));
       
       navigate("/"); 
