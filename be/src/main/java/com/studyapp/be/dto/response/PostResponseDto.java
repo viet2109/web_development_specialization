@@ -1,8 +1,10 @@
 package com.studyapp.be.dto.response;
 
+import com.studyapp.be.dto.response.bases.AttachmentResponseDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -14,8 +16,8 @@ public class PostResponseDto {
     private Long id;
     private UserLoginResponseDto.UserInfo creator;
     private String content;
-    private Set<FileResponseDto> attachments;
-    private Long totalReactions;
+    private Set<AttachmentResponseDto> attachments;
+    private List<ReactionSummaryDto> reactionSummary;
     private PostResponseDto sharedPost;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

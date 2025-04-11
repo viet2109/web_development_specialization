@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VerificationEmailToken {
-    private static final int EXPIRATION_MINUTES = 60 * 24; // 24 giờ
+    private static final int EXPIRATION_MINUTES = 60 * 24;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
