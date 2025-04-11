@@ -14,8 +14,8 @@ public interface PostDao extends CrudRepository<Post, Long>, JpaSpecificationExe
 
     @Query("SELECT p " +
             "FROM Post p " +
-            "LEFT JOIN p.reactions r " +
-            "LEFT JOIN p.comments c " +
+            "LEFT JOIN PostReaction r ON  r.post.id = p.id " +
+            "LEFT JOIN PostComment c ON c.post.id = p.id " +
             "LEFT JOIN FriendShip fs ON ((fs.user1.id = :userId AND fs.user2.id = p.creator.id) " +
             "                           OR (fs.user2.id = :userId AND fs.user1.id = p.creator.id)) " +
             "GROUP BY p " +

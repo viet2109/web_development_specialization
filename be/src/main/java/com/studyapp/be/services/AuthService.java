@@ -38,7 +38,6 @@ public class AuthService {
         return UserLoginResponseDto.builder().user(userInfo).accessToken(jwtTokenProvider.generateToken(userInfo.getEmail())).build();
     }
 
-
     @Transactional
     public UserLoginResponseDto.UserInfo signUp(UserSignUpRequest dto) {
         User existUser = userDao.findByEmail(dto.getEmail()).orElse(null);

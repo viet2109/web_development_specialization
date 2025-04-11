@@ -5,15 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class CommentAttachmentResponseDto {
+public class FriendShipRequestResponseDto {
     private Long id;
-    private FileResponseDto file;
-    private Set<ReactionResponseDto> reactions;
-    private Long totalReactions;
+    private UserLoginResponseDto.UserInfo sender;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
