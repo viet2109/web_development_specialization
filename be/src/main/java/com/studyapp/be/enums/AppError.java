@@ -32,6 +32,7 @@ public enum AppError {
     MESSAGE_EMPTY_CONTENT("Message content cannot be empty", HttpStatus.BAD_REQUEST),
 
     // Chat Room Errors
+    CHATROOM_ALREADY_EXISTS("The chat room is already exist", HttpStatus.CONFLICT),
     CHATROOM_NOT_FOUND("The requested chat room was not found", HttpStatus.NOT_FOUND),
     CHATROOM_CREATION_FAILED("Failed to create chat room", HttpStatus.BAD_REQUEST),
     CHATROOM_ACCESS_DENIED("You do not have access to this chat room", HttpStatus.FORBIDDEN),

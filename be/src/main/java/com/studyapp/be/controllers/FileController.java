@@ -1,6 +1,7 @@
 package com.studyapp.be.controllers;
 
 import com.studyapp.be.dto.response.FileResponseDto;
+import com.studyapp.be.mappers.FileMapper;
 import com.studyapp.be.services.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +21,7 @@ import java.net.URI;
 public class FileController {
 
     private final FileService fileService;
+    private final FileMapper fileMapper;
 
     @Operation(
             summary = "Upload a file",
@@ -29,7 +31,7 @@ public class FileController {
     public ResponseEntity<FileResponseDto> upload(
             @Parameter(description = "The file to upload", required = true)
             @RequestParam MultipartFile file) {
-        FileResponseDto fileResponseDto = fileService.upload(file);
+        FileResponseDto fileResponseDto = fileMapper.entityToDto(fileService.upload(file));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(fileResponseDto.getId())

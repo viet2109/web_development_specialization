@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +42,11 @@ public class FcmService {
         return sendToTopic(topic, title, body, dataPayload);
     }
 
-
     private User getUserFromRequest() {
         return userDao.findByEmail(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
     }
 
-    public String sendToUser(Long userId, String title, String body, Map<String, String> dataPayload) {
+    public void sendToUser(Long userId, String title, String body, Map<String, String> dataPayload) {
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
 
@@ -61,7 +59,7 @@ public class FcmService {
                 .map(token -> createMessage(token, title, body, dataPayload))
                 .collect(Collectors.toList());
 
-        return sendBatch(messages);
+        sendBatch(messages);
     }
 
     private String sendToTopic(String topic, String title, String body, Map<String, String> dataPayload) {
@@ -106,12 +104,13 @@ public class FcmService {
         }
     }
 
-    private String sendBatch(List<Message> messages) {
+    private void sendBatch(List<Message> messages) {
         for (int attempt = 0, delay = (int) INITIAL_DELAY_MS; attempt < MAX_RETRIES; attempt++) {
             try {
                 BatchResponse response = FirebaseMessaging.getInstance().sendEach(messages);
                 log.info("Successfully sent {} messages", response.getSuccessCount());
-                return "Sent " + response.getSuccessCount() + " messages successfully";
+                response.getSuccessCount();
+                return;
             } catch (FirebaseMessagingException e) {
                 log.error("Failed to send batch notification, attempt {}: {}", attempt + 1, e.getMessage());
                 if (attempt == MAX_RETRIES - 1) {
