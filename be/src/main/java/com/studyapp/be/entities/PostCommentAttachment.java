@@ -1,10 +1,8 @@
 package com.studyapp.be.entities;
 
-import com.studyapp.be.entities.bases.CommentAttachment;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.studyapp.be.entities.bases.Attachment;
+import com.studyapp.be.entities.bases.Comment;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +12,11 @@ import java.util.Set;
 @DiscriminatorValue("POST_COMMENT")
 @Setter
 @Getter
-public class PostCommentAttachment extends CommentAttachment {
+public class PostCommentAttachment extends Attachment {
+
+    @OneToOne
+    private Comment comment;
+
     @OneToMany(mappedBy = "attachment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostCommentAttachmentReaction> reactions;
 }

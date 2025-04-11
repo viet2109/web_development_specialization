@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.studyapp.be.entities.User;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "comments")
-public class Comment {
+public abstract class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +32,6 @@ public class Comment {
     @ManyToOne
     @JsonIgnore
     private Comment parent;
-
-    @OneToOne(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private CommentAttachment attachment;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

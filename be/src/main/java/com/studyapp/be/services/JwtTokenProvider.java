@@ -1,6 +1,9 @@
 package com.studyapp.be.services;
 
+import com.studyapp.be.enums.AppError;
+import com.studyapp.be.exceptions.AppException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -45,11 +48,15 @@ public class JwtTokenProvider {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) getSignKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith((SecretKey) getSignKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException expiredJwtException) {
+            throw new AppException(AppError.TOKEN_EXPIRED);
+        }
     }
 
     private boolean isTokenExpired(Date time) {

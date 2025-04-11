@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FriendService {
     private final FriendDao friendDao;
-    private final FcmService fcmService;
     private final UserDao userDao;
 
     @Transactional

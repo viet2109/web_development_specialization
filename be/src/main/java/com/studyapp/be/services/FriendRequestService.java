@@ -49,16 +49,18 @@ public class FriendRequestService {
     @Transactional
     public void acceptRequest(Long id) {
         FriendShipRequest friendShipRequest = friendRequestDao.findById(id).orElseThrow(() -> new AppException(AppError.FRIEND_REQUEST_NOT_FOUND));
-        if (!getUserFromRequest().getId().equals(friendShipRequest.getReceiver().getId())) {
+        User sender = friendShipRequest.getSender();
+        User receiver = friendShipRequest.getReceiver();
+        if (!getUserFromRequest().getId().equals(receiver.getId())) {
             throw new AppException(AppError.AUTH_ACCESS_DENIED);
         }
         FriendShip friendShip = FriendShip.builder()
-                .user1(friendShipRequest.getSender())
-                .user2(friendShipRequest.getReceiver())
+                .user1(sender)
+                .user2(receiver)
                 .build();
         friendDao.save(friendShip);
         deleteRequest(friendShipRequest);
-        fcmService.sendToUser(friendShipRequest.getSender().getId(), "Friend Request Accepted", "Your friend request has been accepted! Tap to start chatting with your new friend.", Map.of("type", "friend_request_accepted", "receiverId", friendShipRequest.getReceiver().getId().toString()));
+        fcmService.sendToUser(sender.getId(), "Friend Request Accepted", "Your friend request has been accepted! Tap to start chatting with your new friend.", Map.of("type", "friend_request_accepted", "receiverId", receiver.getId().toString()));
     }
 
     @Transactional
