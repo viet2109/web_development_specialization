@@ -9,6 +9,8 @@ import com.studyapp.be.exceptions.AppException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -33,9 +35,9 @@ public class FileService {
     public File upload(MultipartFile file) {
         if (file == null || file.isEmpty()) throw new AppException(AppError.FILE_UPLOAD_FAILED);
         String mimeType = getMimetype(file);
-        Map params = ObjectUtils.asMap("asset_folder", assetFolder, "resource_type", mimeType);
+        Map params = ObjectUtils.asMap("folder", assetFolder, "resource_type", mimeType);
         try {
-            Map result = storage.uploader().upload(file.getInputStream(), params);
+            Map result = storage.uploader().upload(file.getInputStream().readAllBytes(), params);
             File fileEntity = File.builder().creator(securityService.getUserFromRequest()).size(file.getSize()).fileCloudId(result.get("public_id").toString()).name(file.getOriginalFilename()).type(mimeType).path(result.get("secure_url").toString()).build();
             log.info("Upload file id: {}", fileEntity.getFileCloudId());
             return fileDao.save(fileEntity);
