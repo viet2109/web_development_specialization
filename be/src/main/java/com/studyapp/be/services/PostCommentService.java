@@ -40,6 +40,7 @@ public class PostCommentService {
             File file = fileService.upload(dto.getAttachmentFile());
             PostCommentAttachment attachment = new PostCommentAttachment();
             attachment.setFile(file);
+            attachment.setComment(comment);
             comment.setAttachment(attachment);
         }
         comment.setPost(post);
