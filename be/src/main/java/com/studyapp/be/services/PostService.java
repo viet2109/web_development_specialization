@@ -1,6 +1,9 @@
 package com.studyapp.be.services;
 
-import com.studyapp.be.dao.*;
+import com.studyapp.be.dao.PostCommentDao;
+import com.studyapp.be.dao.PostDao;
+import com.studyapp.be.dao.PostReactionDao;
+import com.studyapp.be.dao.UserDao;
 import com.studyapp.be.dto.request.CreatePostRequestDto;
 import com.studyapp.be.dto.response.PostResponseDto;
 import com.studyapp.be.dto.response.ReactionResponseDto;
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,11 +38,12 @@ public class PostService {
     private final PostMapper postMapper;
     private final UserDao userDao;
     private final FileService fileService;
-    private final FileDao fileDao;
+    private final Executor asyncExecutor;
     private final ReactionMapper reactionMapper;
     private final PostReactionDao reactionDao;
     private final PostCommentDao postCommentDao;
     private final PostReactionDao postReactionDao;
+
 
     @Transactional
     public PostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
@@ -51,10 +56,11 @@ public class PostService {
         }
 
         if (createPostRequestDto.getFiles() != null && !createPostRequestDto.getFiles().isEmpty()) {
-            List<CompletableFuture<File>> futures = createPostRequestDto.getFiles().stream().filter(Objects::nonNull).map(file -> CompletableFuture.supplyAsync(() -> fileService.upload(file)).exceptionally(ex -> null)).toList();
+            List<CompletableFuture<File>> futures = createPostRequestDto.getFiles().stream().filter(Objects::nonNull).map(file -> CompletableFuture.supplyAsync(() -> fileService.upload(file), asyncExecutor)).toList();
             Set<PostAttachment> attachments = futures.stream().map(CompletableFuture::join).filter(Objects::nonNull).map(file -> {
                 PostAttachment attachment = new PostAttachment();
                 attachment.setFile(file);
+                attachment.setPost(post);
                 return attachment;
             }).collect(Collectors.toSet());
             post.setAttachments(attachments);

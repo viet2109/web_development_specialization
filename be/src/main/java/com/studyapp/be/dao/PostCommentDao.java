@@ -13,6 +13,4 @@ public interface PostCommentDao extends BaseCommentDao<PostComment, Long> {
     long countByParent(PostComment parent);
 
     long countByPost(Post post);
-
-    Optional<PostComment> findByPost(Post post);
 }
