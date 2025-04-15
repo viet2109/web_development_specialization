@@ -1,21 +1,17 @@
 package com.studyapp.be.entities;
 
-import com.studyapp.be.enums.FriendShipRequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"sender_id", "receiver_id"})
-}, name = "friendship_requests")
+@Table(name = "friendship_requests")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-
 public class FriendShipRequest {
 
     @Id
@@ -31,5 +27,4 @@ public class FriendShipRequest {
     private User receiver;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private FriendShipRequestStatus status;
 }
