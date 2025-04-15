@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface PostCommentAttachmentReactionDao extends BaseReactionDao<PostCommentAttachmentReaction, Long> {
     @Query("SELECT new com.studyapp.be.dto.response.ReactionSummaryDto(r.emoji, COUNT(r)) " +
-            "FROM PostCommentAttachmentReaction r WHERE r.attachment = :post GROUP BY r.emoji")
+            "FROM PostCommentAttachmentReaction r WHERE r.attachment = :attachment GROUP BY r.emoji")
     List<ReactionSummaryDto> getReactionSummaryByAttachment(@Param("attachment") PostCommentAttachment attachment);
 
     boolean existsByAttachmentAndCreator(PostCommentAttachment attachment, User creator);
