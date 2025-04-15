@@ -28,13 +28,13 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<File> attachments;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PostAttachment> attachments;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostReaction> reactions;
 
-    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostComment> comments;
 
     @ManyToOne
