@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -45,6 +46,7 @@ public class MessageService {
     private final FileService fileService;
     private final SecurityService securityService;
     private final MessageAttachmentDao messageAttachmentDao;
+    private final Executor asyncExecutor;
 
     @Transactional
     public MessageResponseDto createMessage(CreateMessageRequestDto messageRequestDto) {
@@ -78,7 +80,7 @@ public class MessageService {
                             log.error("Lỗi upload file", e);
                             return null;
                         }
-                    }))
+                    }, asyncExecutor))
                     .toList();
 
             uploadedFiles = futures.stream()
