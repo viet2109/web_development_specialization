@@ -5,11 +5,8 @@ import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "../../hook/hook";
-import { RootState } from "../../redux/store";
-import { deletePost, likePost, unlikePost } from "../../redux/postSlice";
-import { useAppSelector } from "../../hook/hook";
+import { useAppDispatch, useAppSelector } from "../../hook/hook";
+import { api } from "../../api/api";
 
 interface Post {
   id: number;
@@ -19,6 +16,8 @@ interface Post {
   desc: string;
   img?: string;
   createdAt: string;
+  reactionSummary: number[]; 
+  totalComments: number;
 }
 
 interface PostProps {
@@ -28,25 +27,48 @@ interface PostProps {
 const Post: React.FC<PostProps> = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.user);
+  const token = useAppSelector((state) => state.auth.token);
 
-  const likes = useSelector((state: RootState) => state.post.likes[post.id] || []);
-  const isLoading = useSelector((state: RootState) => state.post.isLoading);
+  const likes = post.reactionSummary || [];
 
-  const handleLike = () => {
-    if (currentUser?.id !== undefined && likes.includes(currentUser.id)) {
-      dispatch(unlikePost(post.id));
-    } else {
-      if (currentUser?.id !== undefined) {
-        dispatch(likePost({ postId: post.id, userId: currentUser.id }));
+  const handleLike = async () => {
+    if (!currentUser?.id || !token) return;
+
+    setIsLoading(true);
+    try {
+      if (likes.includes(currentUser.id)) {
+        await api.post(`/posts/${post.id}/unlike`);
+        dispatch({
+          type: "post/unlikePost",
+          payload: { postId: post.id, userId: currentUser.id },
+        });
+      } else {
+        await api.post(`/posts/${post.id}/like`);
+        dispatch({
+          type: "post/likePost",
+          payload: { postId: post.id, userId: currentUser.id },
+        });
       }
+    } catch (error) {
+      console.error("Error handling like/unlike:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDelete = () => {
-    dispatch(deletePost(post.id));
+  const handleDelete = async () => {
+    if (!currentUser?.id || !token) return;
+
+    try {
+      await api.delete(`/posts/${post.id}`);
+      dispatch({ type: "post/deletePost", payload: post.id });
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
   return (
@@ -55,7 +77,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
         <div className="flex items-center justify-between relative">
           <div className="flex gap-5">
             <img
-              src={`/upload/${post.profilePic}`}
+              src={post.profilePic}
               alt=""
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -79,11 +101,11 @@ const Post: React.FC<PostProps> = ({ post }) => {
             </button>
           )}
         </div>
-        <div className="my-5">
+        <div className="my-5 ">
           <p>{post.desc}</p>
           {post.img && (
             <img
-              src={`/upload/${post.img}`}
+              src={post.img}
               alt=""
               className="w-full max-h-[500px] object-cover mt-5"
             />
@@ -93,7 +115,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
           <div className="flex items-center gap-2.5 cursor-pointer text-sm">
             {isLoading ? (
               <span>Loading...</span>
-            ) : currentUser?.id !== undefined && likes.includes(currentUser.id) ? (
+            ) : likes.includes(currentUser?.id || 0) ? (
               <FavoriteOutlinedIcon className="text-red-500" onClick={handleLike} />
             ) : (
               <FavoriteBorderOutlinedIcon onClick={handleLike} />
@@ -105,7 +127,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
             onClick={() => setCommentOpen(!commentOpen)}
           >
             <TextsmsOutlinedIcon />
-            See Comments
+            {post.totalComments} Comments
           </div>
           <div className="flex items-center gap-2.5 cursor-pointer text-sm">
             <ShareOutlinedIcon />

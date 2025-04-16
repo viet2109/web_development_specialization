@@ -11,6 +11,8 @@ api.interceptors.request.use(
     const token = store.getState().auth.token;
 
     if (token) {
+    
+
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -20,37 +22,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-const API_BASE_URL = "http://localhost:8081"; // URL của backend
 
-export const login = async (email: string, password: string) => {
-    try {
-        const response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
-        return response.data; 
-    } catch (error) {
-        console.error("Login failed:", error);
-        throw error;
-    }
-}
-export const register = async (
-  
-  email: string,
-  password: string,
-  fistName: string,
-  lastName: string,
-  gender: "MALE" | "FEMALE" | "OTHER"
-) => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/auth/signup`, {
-     
-      email,
-      password,
-      fistName,
-      lastName,
-      gender,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Registration error:", error);
-    throw error;
-  }
-};
+
+

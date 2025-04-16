@@ -1,50 +1,55 @@
-
 import { Link, useNavigate } from "react-router-dom";
-
-import "../register/Register.css"
+import "../register/Register.css";
 import { useState } from "react";
-import { register } from "../../api/api";
 import { ToastContainer, toast } from "react-toastify";
-import { ClipLoader } from 'react-spinners';
+import { ClipLoader } from "react-spinners";
+import { api } from "../../api/api";
 
 type Gender = "MALE" | "FEMALE" | "OTHER";
+
 const Register = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [firstName, setfirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [gender, setGender] = useState<Gender>("MALE");
-  
   const [loading, setLoading] = useState<boolean>(false);
+
   const navigate = useNavigate();
+
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await register(email, password, firstName, lastName, gender);
+      await api.post("/auth/register", {
+        email,
+        password,
+        firstName,
+        lastName,
+        gender,
+      });
+
       toast.success(
         `🎉 Registration successful! Please check your email (${email}) to verify your account.`,
         {
-          position: 'top-center',
+          position: "top-center",
           autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: 'colored',
+          theme: "colored",
         }
       );
+
       navigate("/login");
     } catch (error) {
-      console.error('Registration failed:', error);
-      toast.error('❌ Registration failed. Please try again.', {
-        position: 'top-center',
+      console.error("Registration failed:", error);
+      toast.error("❌ Registration failed. Please try again.", {
+        position: "top-center",
       });
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="register">
       <div className="card">
@@ -63,7 +68,6 @@ const Register = () => {
         <div className="right">
           <h1>Register</h1>
           <form onSubmit={handleRegister}>
-           
             <input
               type="email"
               placeholder="Email"
@@ -74,29 +78,23 @@ const Register = () => {
             <input
               type="password"
               placeholder="Password"
-              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-           
             />
             <input
               type="text"
-              placeholder="firstName"
+              placeholder="First Name"
               value={firstName}
-              name="firstName"
               onChange={(e) => setfirstName(e.target.value)}
               required
-              
             />
-             <input
+            <input
               type="text"
-              placeholder="lastName"
+              placeholder="Last Name"
               value={lastName}
-              name="lastName"
               onChange={(e) => setLastName(e.target.value)}
               required
-              
             />
             <select
               value={gender}
@@ -107,16 +105,10 @@ const Register = () => {
               <option value="FEMALE">Female</option>
               <option value="OTHER">Other</option>
             </select>
-            
+
             <button type="submit" disabled={loading}>
-        {loading ? (
-          <>
-            <ClipLoader size={16} color="#000" /> 
-          </>
-        ) : (
-          'Register'
-        )}
-      </button>
+              {loading ? <ClipLoader size={16} color="#000" /> : "Register"}
+            </button>
           </form>
         </div>
       </div>
