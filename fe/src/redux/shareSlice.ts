@@ -1,11 +1,12 @@
-// redux/postSlice.ts
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { api } from "../api/api";
 
 interface PostPayload {
-  desc: string;
-  img?: string;
+  content: string;
+ 
+  files?: File;
 }
+
 
 export const uploadImage = createAsyncThunk<string, File>(
   "post/uploadImage",
@@ -13,26 +14,62 @@ export const uploadImage = createAsyncThunk<string, File>(
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await axios.post("http://localhost:8081/upload", formData, {
+    const res = await api.post("/files/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    return res.data.url; // Trả về URL từ server
+    return res.data.url;
   }
 );
 
 export const sharePost = createAsyncThunk<void, PostPayload>(
   "post/sharePost",
   async (payload) => {
-    await axios.post("http://localhost:8081/posts", payload);
+    const formData = new FormData();
+    formData.append("content", payload.content);
+    
+    if (payload.files) {
+      formData.append("files", payload.files);
+    }
+
+    await api.post("/posts", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   }
 );
 
 const share = createSlice({
   name: "share",
-  initialState: {},
+  initialState: {
+    loading: false,
+    error: null as string | null,
+  },
   reducers: {},
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(sharePost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(sharePost.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(sharePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to share post";
+      })
+      .addCase(uploadImage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(uploadImage.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(uploadImage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to upload image";
+      });
+  },
 });
 
 export default share.reducer;
