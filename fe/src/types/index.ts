@@ -3,6 +3,7 @@ import { FC } from "react";
 export interface User {
   name: string;
   email: string;
+  id : number;
 }
 export interface UserLoginResponse {
   user: User;
