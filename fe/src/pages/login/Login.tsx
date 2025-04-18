@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/authSlice";
 import { toast } from "react-toastify";
@@ -13,30 +13,41 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
-       
-      console.log("📦 Login request:", { email, password });
-      const response = await api.post("/auth/login", { email, password });
-      console.log("🖥️ Response received:", response);
+      console.log('📦 Login request:', { email, password });
+      const response = await api.post('/auth/login', { email, password });
+      console.log('🖥️ Response received:', response.data);
+
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+
       const { accessToken, user } = response.data;
-      localStorage.setItem("token", accessToken);
-     
-      navigate("/");
-  
-      toast.success("🎉 Login successful!", {
-        position: "top-center",
+      if (!accessToken || !user) {
+        throw new Error('Missing accessToken or user in response');
+      }
+
+      localStorage.setItem('token', accessToken);
+      console.log('Token stored:', localStorage.getItem('token'));
+
+      dispatch(loginSuccess({ user, token: accessToken }));
+      navigate('/');
+
+      toast.success('🎉 Login successful!', {
+        position: 'top-center',
         autoClose: 3000,
         hideProgressBar: false,
       });
-    } catch (error) {
-      console.error("Login failed:", error);
-      toast.error("❌ Invalid email or password. Please try again.", {
-        position: "top-center",
+    } catch (error: any) {
+      console.error('Login failed:', error.message, error.response?.data);
+      toast.error('❌ Invalid email or password. Please try again.', {
+        position: 'top-center',
       });
     } finally {
       setLoading(false);

@@ -1,44 +1,43 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../api/api";
 
-interface LikePayload {
+interface HeartPayload {
   postId: number;
   userId: number;
 }
 
 interface PostState {
-  likes: { [postId: number]: number[] };
+  hearts: { [postId: number]: number[] };
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: PostState = {
-  likes: {},
+  hearts: {},
   isLoading: false,
   error: null,
 };
 
-
-export const likePost = createAsyncThunk(
-  "posts/likePost",
-  async ({ postId, userId }: LikePayload, { rejectWithValue }) => {
+export const heartPost = createAsyncThunk(
+  "posts/heartPost",
+  async ({ postId, userId }: HeartPayload, { rejectWithValue }) => {
     try {
-      await api.post(`/posts/${postId}/like`, { userId });
+      await api.post(`/posts/${postId}/reactions`, { userId });
       return { postId, userId };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to like post");
+      return rejectWithValue(error.response?.data?.message || "Failed to heart post");
     }
   }
 );
 
-export const unlikePost = createAsyncThunk(
-  "posts/unlikePost",
-  async (postId: number, { rejectWithValue }) => {
+export const unheartPost = createAsyncThunk(
+  "posts/unheartPost",
+  async ({ postId, userId }: { postId: number; userId: number }, { rejectWithValue }) => {
     try {
-      await api.delete(`/posts/${postId}/unlike`);
-      return postId;
+      await api.delete(`/${postId}/reactions`, { data: { userId } });
+      return { postId, userId };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to unlike post");
+      return rejectWithValue(error.response?.data?.message || "Failed to unheart post");
     }
   }
 );
@@ -56,7 +55,7 @@ export const deletePost = createAsyncThunk(
 );
 
 const postSlice = createSlice({
-  name: "posts",
+  name: "post",
   initialState,
   reducers: {
     resetError: (state) => {
@@ -65,33 +64,34 @@ const postSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Like Post
-      .addCase(likePost.pending, (state) => {
+      // Heart Post
+      .addCase(heartPost.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(likePost.fulfilled, (state, action) => {
+      .addCase(heartPost.fulfilled, (state, action) => {
         const { postId, userId } = action.payload;
-        if (!state.likes[postId]) state.likes[postId] = [];
-        state.likes[postId].push(userId);
+        if (!state.hearts[postId]) state.hearts[postId] = [];
+        if (!state.hearts[postId].includes(userId)) {
+          state.hearts[postId].push(userId);
+        }
         state.isLoading = false;
       })
-      .addCase(likePost.rejected, (state, action) => {
+      .addCase(heartPost.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Unlike Post
-      .addCase(unlikePost.pending, (state) => {
+      // Unheart Post
+      .addCase(unheartPost.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(unlikePost.fulfilled, (state, action) => {
-        const postId = action.payload;
-        const currentUserId = state.likes[postId]?.[0]; 
-        state.likes[postId] = state.likes[postId]?.filter((id) => id !== currentUserId) || [];
+      .addCase(unheartPost.fulfilled, (state, action) => {
+        const { postId, userId } = action.payload;
+        state.hearts[postId] = state.hearts[postId]?.filter((id) => id !== userId) || [];
         state.isLoading = false;
       })
-      .addCase(unlikePost.rejected, (state, action) => {
+      .addCase(unheartPost.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
@@ -102,7 +102,7 @@ const postSlice = createSlice({
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         const postId = action.payload;
-        delete state.likes[postId];
+        delete state.hearts[postId];
         state.isLoading = false;
       })
       .addCase(deletePost.rejected, (state, action) => {

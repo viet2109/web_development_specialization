@@ -4,13 +4,14 @@ import FriendIcon from "../../assets/images/friend.png";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hook";
 import { sharePost } from "../../redux/shareSlice";
+import { useQueryClient } from "@tanstack/react-query";
 const Share = () => {
   const [file, setFile] = useState<File | null>(null);
   const [content, setContent] = useState<string>("");
 
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.user);
-
+  const queryClient = useQueryClient();
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -32,6 +33,7 @@ const Share = () => {
       }
 
       await dispatch(sharePost(payload)).unwrap();
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       setContent("");
       setFile(null);
     } catch (error) {

@@ -15,6 +15,7 @@ import appReducer from "./appSlice";
 import authReducer from "./authSlice";
 import shareReducer from "./shareSlice";
 import  postReducer  from "./postSlice";
+import commentsReducer from "./commentSlice";
 const authConfig = {
   key: "auth",
   storage,
@@ -24,7 +25,9 @@ const rootReducer = combineReducers({
   app: appReducer,
   auth: persistReducer(authConfig, authReducer),
   share : shareReducer,
-  post : postReducer
+  comment : commentsReducer,
+  posts : postReducer,
+  
 });
 
 export const store = configureStore({
