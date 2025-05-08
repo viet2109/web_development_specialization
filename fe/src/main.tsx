@@ -15,7 +15,6 @@ if ("serviceWorker" in navigator) {
       .register("/firebase-messaging-sw.js")
       .then((registration) => {
         console.log("Service Worker đăng ký thành công:", registration);
-        // Sau khi đăng ký, bạn có thể yêu cầu token
         requestForToken();
       })
       .catch((error) => {
