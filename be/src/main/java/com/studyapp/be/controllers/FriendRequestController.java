@@ -27,23 +27,37 @@ public class FriendRequestController {
     )
     @PostMapping
     public ResponseEntity<?> sendFriendRequest(
-            @RequestBody @Valid @NotNull(message = "ReceiverId must not be null") Long receiverId) {
+            @RequestBody Long receiverId) {
         friendRequestService.createFriendRequest(receiverId);
         return ResponseEntity.ok().build();
     }
 
     @Operation(
-            summary = "Get Friend Requests",
-            description = "Retrieves a paginated list of friend requests with optional sorting parameters."
+            summary = "Get Received Friend Requests",
+            description = "Returns a paginated list of friend requests received by the current user. Supports pagination via `page` and `size`, and custom sorting by any field (default: `createdAt` descending)."
     )
-    @GetMapping
-    public ResponseEntity<Page<FriendShipRequestResponseDto>> getFriendRequest(
+    @GetMapping("/received")
+    public ResponseEntity<Page<FriendShipRequestResponseDto>> getFriendRequestReceived(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String[] sort
     ) {
         Pageable pageable = PageRequest.of(page, size, Utils.parseSort(sort));
-        return ResponseEntity.ok(friendRequestService.getFriendRequest(pageable));
+        return ResponseEntity.ok(friendRequestService.getFriendRequestReceived(pageable));
+    }
+
+    @Operation(
+            summary = "Get Sent Friend Requests",
+            description = "Returns a paginated list of friend requests sent by the current user. Supports pagination via `page` and `size`, and custom sorting by any field (default: `createdAt` descending)."
+    )
+    @GetMapping("/sent")
+    public ResponseEntity<Page<FriendShipRequestResponseDto>> getFriendRequestSent(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Utils.parseSort(sort));
+        return ResponseEntity.ok(friendRequestService.getFriendRequestSent(pageable));
     }
 
     @Operation(
