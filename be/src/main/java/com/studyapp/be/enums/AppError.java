@@ -61,7 +61,11 @@ public enum AppError {
 
     // General Errors
     INTERNAL_SERVER_ERROR("An unexpected error occurred on the server", HttpStatus.INTERNAL_SERVER_ERROR),
-    BAD_REQUEST("The request could not be understood or was missing required parameters", HttpStatus.BAD_REQUEST);
+    BAD_REQUEST("The request could not be understood or was missing required parameters", HttpStatus.BAD_REQUEST),
+
+
+    //FCM token Errors
+    FCM_TOKEN_ALREADY_EXIST("Fcm token has already exist", HttpStatus.CONFLICT);
 
     String message;
     HttpStatus httpStatus;

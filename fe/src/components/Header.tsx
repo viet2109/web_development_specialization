@@ -17,7 +17,7 @@ function Header(props: Props) {
         ) : (
           <Fragment>
             <Link to={routers.login}>Login</Link>
-            <Link to={routers.signUp}>Sign up</Link>
+            <Link to={routers.register}>Sign up</Link>
           </Fragment>
         )}
       </nav>
