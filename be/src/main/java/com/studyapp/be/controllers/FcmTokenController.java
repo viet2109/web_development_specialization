@@ -1,11 +1,8 @@
 package com.studyapp.be.controllers;
 
-import com.studyapp.be.dto.response.FcmTokenResponseDto;
 import com.studyapp.be.services.FcmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,31 +11,43 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/fcm-token")
+@RequestMapping("/fcm-tokens")
 @RequiredArgsConstructor
 @Tag(name = "FCM Token API", description = "APIs for managing FCM tokens used for push notifications")
 public class FcmTokenController {
     private final FcmService fcmService;
 
     @Operation(
-            summary = "Create FCM Token",
-            description = "Creates a new FCM token using the provided token string and returns the created token details."
+            summary = "Register FCM Token for Current User",
+            description = "Subscribes the given FCM token to the current authenticated user's personal topic so they can receive user-specific notifications."
     )
     @PostMapping
-    public ResponseEntity<FcmTokenResponseDto> createFcmToken(
-            @RequestBody @Valid @NotBlank(message = "Token must not be blank") String token) {
-        FcmTokenResponseDto responseDto = fcmService.createFcmToken(token);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+    public ResponseEntity<Void> createFcmToken(@RequestBody String token) {
+        fcmService.createFcmToken(token);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
                 .path("/{token}")
-                .buildAndExpand(responseDto.getToken())
+                .buildAndExpand(token)
                 .toUri();
-        return ResponseEntity.created(location).body(responseDto);
+        return ResponseEntity.created(location).build();
     }
 
     @Operation(
-            summary = "Delete FCM Token",
-            description = "Deletes the FCM token specified by the token string."
+            summary = "Register FCM Token for Global Broadcast",
+            description = "Subscribes the given FCM token to the global \"all_users\" topic so that the device will receive broadcast notifications sent to all users."
     )
+    @PostMapping("/all")
+    public ResponseEntity<Void> createFcmTokenForAllUsers(@RequestBody String token) {
+        fcmService.createFcmTokenForAllUser(token);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{token}")
+                .buildAndExpand(token)
+                .toUri();
+        return ResponseEntity.created(location).build();
+    }
+
+    @Operation(summary = "Delete FCM Token", description = "Deletes the FCM token specified by the token string.")
     @DeleteMapping("/{token}")
     public ResponseEntity<Void> deleteFcmToken(@PathVariable String token) {
         fcmService.deleteFcmToken(token);
