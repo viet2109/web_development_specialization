@@ -9,18 +9,27 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { logOutSuccess } from "../../redux/authSlice";
 
 
 const Navbar: React.FC = () => {
  
   const navigate = useNavigate();
+  const  dispatch = useDispatch();
 
   const handleClick = async (e: React.MouseEvent<SVGSVGElement>) => {
     e.preventDefault();
 
     try {
      
+      localStorage.removeItem("token");
+      
       navigate("/login");
+      dispatch(logOutSuccess());
+
+
+      
     } catch (err) {
       console.error("Logout failed with error:", err);
     }

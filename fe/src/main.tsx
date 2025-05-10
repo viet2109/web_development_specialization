@@ -6,6 +6,7 @@ import App from "./App";
 import { requestForToken } from "./firebase-config";
 import "./index.css";
 import { persistor, store } from "./redux/store";
+import { ToastContainer } from "react-toastify";
 
 const queryClient = new QueryClient();
 
@@ -24,9 +25,11 @@ if ("serviceWorker" in navigator) {
 }
 
 createRoot(document.getElementById("root")!).render(
+ 
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <QueryClientProvider client={queryClient}>
+      <ToastContainer/>
         <App />
       </QueryClientProvider>
     </PersistGate>
