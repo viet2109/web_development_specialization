@@ -16,6 +16,7 @@ import authReducer from "./authSlice";
 import shareReducer from "./shareSlice";
 import  postReducer  from "./postSlice";
 import commentsReducer from "./commentSlice";
+import friendRequestReducer from "./friendSlice";
 const authConfig = {
   key: "auth",
   storage,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   share : shareReducer,
   comment : commentsReducer,
   posts : postReducer,
+  friendRequest: friendRequestReducer, 
   
 });
 
