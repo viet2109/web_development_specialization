@@ -1,47 +1,74 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../rightBar/RightBar.css";
 import ChatBox from "../chatBox/ChatBox";
+import { useAppDispatch, useAppSelector } from "../../hook/hook";
+
+import { fetchFriendRequests,resetError } from "../../redux/friendRequestSlice";
+import { api } from "../../api/api";
 
 const RightBar: React.FC = () => {
   const [openChat, setOpenChat] = useState(false);
   const [chatUser, setChatUser] = useState("");
+  const dispatch = useAppDispatch();
+    const { requests, isLoading, error } = useAppSelector((state) => state.friendRequest);
 
   const handleOpenChat = (username: string) => {
     setChatUser(username);
     setOpenChat(true);
   };
+  useEffect(() => {
+    dispatch(fetchFriendRequests({ page: 0, size: 10 }));
+  }, [dispatch]);
+
+
+  const handleAccept = async (id: number) => {
+    try {
+      await api.post(`/friend-requests/${id}/accept`);
+      dispatch(fetchFriendRequests({ page: 0, size: 10 }));
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+    }
+  };
+
+  const handleDecline = async (id: number) => {
+    try {
+      await api.delete(`/friend-requests/${id}`);
+      dispatch(fetchFriendRequests({ page: 0, size: 10 }));
+    } catch (error) {
+      console.error("Error declining friend request:", error);
+    }
+  }
+  
  
   return (
     <div className="rightBar">
       <div className="container">
         <div className="item">
-          <span>Suggestions For You</span>
-          <div className="user">
-            <div className="userInfo">
-              <img
-                src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                alt="User 1"
-              />
-              <span>Test User 1</span>
+          <span>Friend Requests</span>
+          {isLoading && <p>Loading...</p>}
+          {error && (
+            <div className="flex items-center text-red-500 text-sm mb-4">
+              <span>{error}</span>
+              <button
+                onClick={() => dispatch(resetError())}
+                className="ml-2 text-blue-500 hover:underline"
+              >
+                Dismiss
+              </button>
             </div>
-            <div className="buttons">
-              <button>follow</button>
-              <button>dismiss</button>
+          )}
+          {requests.length === 0 && !isLoading && <p>No friend requests</p>}
+          {requests.map((request) => (
+            <div key={request.id} className="user">
+              <div className="userInfo">
+                <span>{request.senderUsername}</span>
+              </div>
+              <div className="buttons">
+                <button onClick={() => handleAccept(request.id)}>Accept</button>
+                <button onClick={() => handleDecline(request.id)}>Decline</button>
+              </div>
             </div>
-          </div>
-          <div className="user">
-            <div className="userInfo">
-              <img
-                src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                alt="User 2"
-              />
-              <span>TestUser2</span>
-            </div>
-            <div className="buttons">
-              <button>follow</button>
-              <button>dismiss</button>
-            </div>
-          </div>
+          ))}
         </div>
         <div className="item">
           <span>Latest Activities</span>
