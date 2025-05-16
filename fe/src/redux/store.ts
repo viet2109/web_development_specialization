@@ -13,7 +13,10 @@ import {
 import storage from "redux-persist/lib/storage";
 import appReducer from "./appSlice";
 import authReducer from "./authSlice";
-
+import shareReducer from "./shareSlice";
+import  postReducer  from "./postSlice";
+import commentsReducer from "./commentSlice";
+import friendRequestReducer from "./friendSlice";
 const authConfig = {
   key: "auth",
   storage,
@@ -22,6 +25,11 @@ const authConfig = {
 const rootReducer = combineReducers({
   app: appReducer,
   auth: persistReducer(authConfig, authReducer),
+  share : shareReducer,
+  comment : commentsReducer,
+  posts : postReducer,
+  friendRequest: friendRequestReducer, 
+  
 });
 
 export const store = configureStore({
@@ -37,4 +45,4 @@ export const store = configureStore({
 export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
-export const dispatch = store.dispatch;
+export type AppDispatch = typeof store.dispatch;
