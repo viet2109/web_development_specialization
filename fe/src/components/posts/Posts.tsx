@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import Post from "../post/Post";
 import { api } from "../../api/api";
 import { useAppSelector } from "../../hook/hook";
+import { useEffect } from "react";
 
 interface File {
   id: number;
@@ -38,7 +39,8 @@ interface PostType {
 const Posts = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
   const token = useAppSelector((state) => state.auth.token);
-
+console.log("Current User:", currentUser);
+  console.log("Token:", token);
   const { isLoading, error, data, refetch } = useQuery<PostType[]>({
     queryKey: ["posts", "feed", token],
     queryFn: async () => {
@@ -52,6 +54,11 @@ const Posts = () => {
     },
     enabled: !!token,
   });
+   useEffect(() => {
+    if (token) {
+      refetch();
+    }
+  }, [token, refetch]);
 
   if (!currentUser || !token) {
     return <div>Please log in to view posts</div>;
