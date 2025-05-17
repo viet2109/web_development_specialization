@@ -23,6 +23,7 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+localStorage.clear();
 
 createRoot(document.getElementById("root")!).render(
  
