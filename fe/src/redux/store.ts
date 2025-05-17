@@ -16,7 +16,7 @@ import authReducer from "./authSlice";
 import shareReducer from "./shareSlice";
 import  postReducer  from "./postSlice";
 import commentsReducer from "./commentSlice";
-import friendRequestReducer from "./friendSlice";
+import friendRequestReducer from "./friendRequestSlice";
 const authConfig = {
   key: "auth",
   storage,
