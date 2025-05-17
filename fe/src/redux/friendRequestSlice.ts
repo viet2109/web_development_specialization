@@ -1,3 +1,4 @@
+// friendRequestSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../api/api";
 
@@ -35,12 +36,40 @@ export const fetchFriendRequests = createAsyncThunk(
   ) => {
     try {
       const response = await api.get(
-        `/friend-requests/received?page=${page}&size=${size}&sort=createdAt&sort=desc`
+        `/friend-requests/received?page=${page}&size=${size}&sort=createdAt,desc`
       );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch friend requests"
+      );
+    }
+  }
+);
+
+export const acceptFriendRequest = createAsyncThunk(
+  'friendRequests/accept',
+  async (requestId: number, { rejectWithValue }) => {
+    try {
+      await api.post(`/friend-requests/${requestId}/accept`);
+      return requestId;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to accept friend request"
+      );
+    }
+  }
+);
+
+export const declineFriendRequest = createAsyncThunk(
+  'friendRequests/decline',
+  async (requestId: number, { rejectWithValue }) => {
+    try {
+      await api.delete(`/friend-requests/${requestId}`);
+      return requestId;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to decline friend request"
       );
     }
   }
@@ -65,11 +94,21 @@ const friendRequestSlice = createSlice({
         state.requests = action.payload.content;
         state.totalElements = action.payload.totalElements;
         state.totalPages = action.payload.totalPages;
-        state.currentPage = action.payload.pageable.pageNumber;
+        state.currentPage = action.payload.pageable?.pageNumber || 0;
       })
       .addCase(fetchFriendRequests.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(acceptFriendRequest.fulfilled, (state, action) => {
+        state.requests = state.requests.filter(
+          request => request.id !== action.payload
+        );
+      })
+      .addCase(declineFriendRequest.fulfilled, (state, action) => {
+        state.requests = state.requests.filter(
+          request => request.id !== action.payload
+        );
       });
   },
 });
