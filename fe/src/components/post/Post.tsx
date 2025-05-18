@@ -40,7 +40,6 @@ const Post: React.FC<PostProps> = ({ post }) => {
   const hasHearted = currentUser?.id ? postHearts.includes(currentUser.id) : false;
 
   
-  console.log("Post ID:", post.id, "postHearts:", postHearts, "hasHearted:", hasHearted);
 
   useEffect(() => {
     if (error) {
@@ -53,11 +52,9 @@ const Post: React.FC<PostProps> = ({ post }) => {
 
   const handleHeart = async () => {
     if (!currentUser?.id || !token) {
-      console.log("Cannot heart/unheart: User not logged in or no token");
       return;
     }
 
-    console.log("Handling heart, hasHearted:", hasHearted);
     try {
       if (hasHearted) {
         console.log("Calling unheartPost for postId:", post.id);

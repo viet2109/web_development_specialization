@@ -4,10 +4,16 @@ import { api } from "../api/api";
 
 interface FriendRequest {
   id: number;
-  senderId: number;
-  senderUsername: string;
-  senderProfilePic: string;
-  createdAt: string;
+  sender: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+    email: string;
+    
+  };
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 interface FriendRequestState {
@@ -38,7 +44,9 @@ export const fetchFriendRequests = createAsyncThunk(
       const response = await api.get(
         `/friend-requests/received?page=${page}&size=${size}&sort=createdAt,desc`
       );
+      console.log(response.data);
       return response.data;
+      
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch friend requests"
