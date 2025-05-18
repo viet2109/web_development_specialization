@@ -2,6 +2,7 @@ package com.studyapp.be.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +28,8 @@ public class FriendShip {
     @ManyToOne
     @JoinColumn(nullable = false)
     private User user2;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @PrePersist
