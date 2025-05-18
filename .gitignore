@@ -1,0 +1,2 @@
+# ignore Firebase service account
+be/src/main/resources/firebase-key.json

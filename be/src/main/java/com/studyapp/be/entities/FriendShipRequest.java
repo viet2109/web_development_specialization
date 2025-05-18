@@ -2,6 +2,8 @@ package com.studyapp.be.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +27,10 @@ public class FriendShipRequest {
     @ManyToOne
     @JoinColumn(nullable = false)
     private User receiver;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

@@ -39,16 +39,17 @@ public class ChatRoomService {
     @Transactional
     public ChatRoomResponseDto createChatRoom(CreateChatRoomRequest request) {
         User creator = securityService.getUserFromRequest();
-        request.getMemberIds().add(creator.getId());
+        Set<Long> memberIds = new HashSet<>(request.getMemberIds());
+        memberIds.add(creator.getId());
 
         //cloud chatroom
-        if (request.getMemberIds().size() == 1 && chatRoomDao.existsCloudChatRoom(creator)) {
+        if (memberIds.size() == 1 && chatRoomDao.existsCloudChatRoom(creator)) {
             throw new AppException(AppError.CHATROOM_ALREADY_EXISTS);
         }
 
         ChatRoom chatRoom = ChatRoom.builder().type(request.getChatType()).name(request.getName()).creator(creator).build();
 
-        Set<ChatRoomMember> members = request.getMemberIds().stream().map(userId -> {
+        Set<ChatRoomMember> members = memberIds.stream().map(userId -> {
             User memberUser = userDao.findById(userId).orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
             Set<MemberRole> roles = new HashSet<>(Collections.singleton(MemberRole.MEMBER));
             if (userId.equals(creator.getId())) roles.add(MemberRole.ADMIN);
