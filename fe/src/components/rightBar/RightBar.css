@@ -93,4 +93,54 @@
   .rightBar .container .item .user .buttons button:last-child {
     background-color: #f0544f;
   }
-  
+  .accept-btn {
+  background-color: #3b82f6; 
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  margin-bottom: 5px;
+}
+
+.accept-btn:hover {
+  background-color: #2563eb; 
+}
+.decline-btn {
+  background-color: #ef4444; 
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.decline-btn:hover {
+  background-color: #dc2626; 
+}
+.user-request {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bgSoft);
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-top: 10px;
+}
+
+.user-request .user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-request .user-info .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
