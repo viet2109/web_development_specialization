@@ -71,30 +71,30 @@ const RightBar: React.FC = () => {
             <p className="text-gray-500 py-2">No friend requests</p>
           ) : (
             requests.map((request) => (
-              <div key={request.id} className="user-request">
-                <div className="user-info">
-                  <img 
-                    src={request.senderProfilePic || "/default-avatar.png"} 
-                    alt={request.senderUsername}
-                    className="avatar"
-                  />
-                  <span>{request.senderUsername}</span>
-                </div>
-                <div className="action-buttons">
-                  <button 
-                    onClick={() => handleAccept(request.id)}
-                    className="accept-btn"
-                  >
-                    Accept
-                  </button>
-                  <button 
-                    onClick={() => handleDecline(request.id)}
-                    className="decline-btn"
-                  >
-                    Decline
-                  </button>
-                </div>
-              </div>
+              <div className="user-request">
+  <div className="user-info">
+    <img 
+      src={request.sender.avatar || "/default-avatar.png"} 
+      alt={`${request.sender.firstName} ${request.sender.lastName}`}
+      className="avatar"
+    />
+    <span>{request.sender.email} </span>
+  </div>
+  <div className="action-buttons">
+    <button 
+      onClick={() => handleAccept(request.id)}
+      className="accept-btn"
+    >
+      Accept
+    </button>
+    <button 
+      onClick={() => handleDecline(request.id)}
+      className="decline-btn"
+    >
+      Decline
+    </button>
+  </div>
+</div>
             ))
           )}
         </div>
