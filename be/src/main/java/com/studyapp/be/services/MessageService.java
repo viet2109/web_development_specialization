@@ -117,6 +117,7 @@ public class MessageService {
                     messageResponseDto.setRepliedTarget(repliedMessageAttachment);
             }
         }
+
         return messageResponseDto;
     }
 
