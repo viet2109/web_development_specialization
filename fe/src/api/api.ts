@@ -1,29 +1,27 @@
 import axios from "axios";
-import { store } from "../redux/store";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_API || "http://localhost:8081",
   withCredentials: true,
 });
 
+// Hàm để thiết lập token sau khi store đã sẵn sàng
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common["Authorization"];
+  }
+};
+
+// Interceptor để xử lý lỗi (nếu cần)
 api.interceptors.request.use(
   (config) => {
-    const token = store.getState().auth.token;
-    if (token) {
-
-    
-
-      config.headers.Authorization = `Bearer ${token}`;
-
-
-    }
-
-    return config;
+    return config; // Token đã được thiết lập qua setAuthToken, không cần làm gì thêm
   },
   (error) => {
     return Promise.reject(error);
   }
 );
-
 
 
