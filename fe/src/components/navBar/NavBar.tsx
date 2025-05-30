@@ -10,18 +10,47 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hook/hook";
 import { logOutSuccess } from "../../redux/authSlice";
+import { fetchMessages } from "../../redux/messageSlice";
 import { Modal, Box, TextField, Button, Typography, List, ListItem, ListItemText, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { ClipLoader } from "react-spinners";
+import ChatBox from "../chatBox/ChatBox";
+
+// Define Sender interface
+interface Sender {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+  updatedAt: string;
+  lastActive: string;
+  activeStatus: string;
+  gender: string;
+  phone: string;
+  birthDate: string;
+  bio: string;
+  avatar: string;
+}
+
+interface Message {
+  id: number;
+  sender: Sender;
+  content: string;
+}
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [openCreateRoom, setOpenCreateRoom] = useState(false);
   const [openMessages, setOpenMessages] = useState(false);
   const [roomName, setRoomName] = useState("");
   const [roomMemberId, setRoomMemberId] = useState("");
-  const [roomType, setRoomType] = useState("private"); 
+  const [roomType, setRoomType] = useState("private");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedSender, setSelectedSender] = useState<Sender | null>(null); // Track selected conversation
+  const { isLoading, error } = useAppSelector((state) => state.message);
 
   const handleClick = async (e: React.MouseEvent<SVGSVGElement>) => {
     e.preventDefault();
@@ -36,22 +65,41 @@ const Navbar: React.FC = () => {
 
   const handleOpenCreateRoom = () => setOpenCreateRoom(true);
   const handleCloseCreateRoom = () => setOpenCreateRoom(false);
-  const handleOpenMessages = () => setOpenMessages(true);
-  const handleCloseMessages = () => setOpenMessages(false);
+
+  const handleOpenMessages = () => {
+    setOpenMessages(true);
+    dispatch(fetchMessages({ page: 0, size: 10, sort: "createdAt,asc", paged: true }))
+      .unwrap()
+      .then((data) => {
+        console.log("Fetched messages:", data);
+        setMessages(data);
+      })
+      .catch((err) => console.error("Error fetching messages:", err));
+  };
+
+  const handleCloseMessages = () => {
+    setOpenMessages(false);
+    setMessages([]);
+  };
+
+  // Handle clicking a message to open ChatBox
+  const handleSelectConversation = (sender: Sender) => {
+    setSelectedSender(sender);
+    setOpenMessages(false); // Close Messages Modal
+  };
+
+  const handleCloseChatBox = () => {
+    setSelectedSender(null);
+  };
 
   const handleCreateRoomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Creating room:", { roomName, roomMemberId, roomType });
     setRoomName("");
     setRoomMemberId("");
-    setRoomType("private"); // Reset to default
+    setRoomType("private");
     handleCloseCreateRoom();
   };
-
-  const messages = [
-    { id: 1, sender: "User1", content: "Hello!" },
-    { id: 2, sender: "User2", content: "Hi there!" },
-  ];
 
   return (
     <div className="navbar">
@@ -111,7 +159,7 @@ const Navbar: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="MemberId"
+              label="Member ID"
               value={roomMemberId}
               onChange={(e) => setRoomMemberId(e.target.value)}
               margin="normal"
@@ -166,17 +214,44 @@ const Navbar: React.FC = () => {
           <Typography variant="h6" component="h2" gutterBottom>
             Messages
           </Typography>
-          <List>
-            {messages.length > 0 ? (
-              messages.map((message) => (
-                <ListItem key={message.id}>
-                  <ListItemText primary={message.sender} secondary={message.content} />
+          {isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+              <ClipLoader size={20} color="#3b82f6" />
+            </Box>
+          ) : error ? (
+            <Box sx={{ color: "#ef4444", textAlign: "center", py: 2 }}>
+              <Typography>{typeof error === "string" ? error : "An error occurred"}</Typography>
+              <Button
+                onClick={() => setMessages([])}
+                variant="contained"
+                color="primary"
+                sx={{ mt: 1 }}
+              >
+                Dismiss
+              </Button>
+            </Box>
+          ) : messages.length === 0 ? (
+            <Typography>No messages available.</Typography>
+          ) : (
+            <List>
+              {messages.map((message) => (
+                <ListItem
+                  key={message.id}
+                  onClick={() => handleSelectConversation(message.sender)} // Open ChatBox
+                  sx={{ "&:hover": { cursor: "pointer", backgroundColor: "#f5f5f5" } }}
+                >
+                  <ListItemText
+                    primary={
+                      message.sender?.firstName
+                        ? `${message.sender.firstName} ${message.sender.lastName || ""}`
+                        : "Unknown Sender"
+                    }
+                    secondary={message.content || "No content"}
+                  />
                 </ListItem>
-              ))
-            ) : (
-              <Typography>No messages available.</Typography>
-            )}
-          </List>
+              ))}
+            </List>
+          )}
           <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
             <Button onClick={handleCloseMessages} variant="contained" color="primary">
               Close
@@ -184,6 +259,16 @@ const Navbar: React.FC = () => {
           </Box>
         </Box>
       </Modal>
+
+      {/* Render ChatBox when a sender is selected */}
+      {selectedSender && (
+        <ChatBox
+    username={`${selectedSender.firstName} ${selectedSender.lastName || ""}`}
+    senderId={selectedSender.id} // Pass senderId for fetching messages
+    roomId={selectedSender.id} // Use senderId as roomId for this example
+    onClose={handleCloseChatBox}
+  />
+      )}
     </div>
   );
 };

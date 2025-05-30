@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../rightBar/RightBar.css";
 import ChatBox from "../chatBox/ChatBox";
 import { useAppDispatch, useAppSelector } from "../../hook/hook";
@@ -6,23 +6,41 @@ import {
   fetchFriendRequests,
   acceptFriendRequest,
   declineFriendRequest,
-  resetError,
+  resetError as resetFriendError,
 } from "../../redux/friendRequestSlice";
+import { fetchChatRooms } from "../../redux/chatRoomSlice";
 import { ClipLoader } from "react-spinners";
 
+interface ChatRoom {
+  id: number;
+  name: string;
+  type: string;
+  createdAt: string;
+}
+
 const RightBar: React.FC = () => {
-  const [openChat, setOpenChat] = React.useState(false);
-  const [chatUser, setChatUser] = React.useState("");
+  const [openChat, setOpenChat] = useState(false);
+  const [chatUser, setChatUser] = useState("");
+  const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const dispatch = useAppDispatch();
-  
-  const { 
-    requests, 
-    isLoading, 
-    error 
+
+  const {
+    requests,
+    isLoading: isFriendLoading,
+    error: friendError,
   } = useAppSelector((state) => state.friendRequest);
+
+  const {
+    isLoading: isChatLoading,
+    error: chatError,
+  } = useAppSelector((state) => state.chatRoom);
 
   useEffect(() => {
     dispatch(fetchFriendRequests({ page: 0, size: 10 }));
+    dispatch(fetchChatRooms({ page: 0, size: 10, type: "PRIVATE", sort: "createdAt,desc" }))
+      .unwrap()
+      .then((data) => setRooms(data))
+      .catch((err) => console.error("Error fetching chat rooms:", err));
   }, [dispatch]);
 
   const handleOpenChat = (username: string) => {
@@ -52,16 +70,15 @@ const RightBar: React.FC = () => {
         {/* Friend Requests Section */}
         <div className="item">
           <span>Friend Requests</span>
-          
-          {isLoading ? (
+          {isFriendLoading ? (
             <div className="flex justify-center py-4">
               <ClipLoader size={20} color="#3b82f6" />
             </div>
-          ) : error ? (
+          ) : friendError ? (
             <div className="error-message">
-              {error}
-              <button 
-                onClick={() => dispatch(resetError())}
+              {friendError}
+              <button
+                onClick={() => dispatch(resetFriendError())}
                 className="dismiss-btn"
               >
                 Dismiss
@@ -71,82 +88,78 @@ const RightBar: React.FC = () => {
             <p className="text-gray-500 py-2">No friend requests</p>
           ) : (
             requests.map((request) => (
-              <div className="user-request">
-  <div className="user-info">
-    <img 
-      src={request.sender.avatar || "/default-avatar.png"} 
-      alt={`${request.sender.firstName} ${request.sender.lastName}`}
-      className="avatar"
-    />
-    <span>{request.sender.email} </span>
-  </div>
-  <div className="action-buttons">
-    <button 
-      onClick={() => handleAccept(request.id)}
-      className="accept-btn"
-    >
-      Accept
-    </button>
-    <button 
-      onClick={() => handleDecline(request.id)}
-      className="decline-btn"
-    >
-      Decline
-    </button>
-  </div>
-</div>
+              <div className="user-request" key={request.id}>
+                <div className="user-info">
+                  <img
+                    src={request.sender.avatar || "/default-avatar.png"}
+                    alt={`${request.sender.firstName} ${request.sender.lastName}`}
+                    className="avatar"
+                  />
+                  <span>{request.sender.email}</span>
+                </div>
+                <div className="action-buttons">
+                  <button
+                    onClick={() => handleAccept(request.id)}
+                    className="accept-btn"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleDecline(request.id)}
+                    className="decline-btn"
+                  >
+                    Decline
+                  </button>
+                </div>
+              </div>
             ))
           )}
         </div>
 
-        {/* Latest Activities Section */}
-        {/* <div className="item">
-          <span>Latest Activities</span>
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="activity">
-              <div className="user-info">
-                <img
-                  src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg"
-                  alt={`User ${item}`}
-                />
-                <p>
-                  <span>User {item}</span> updated their profile
-                </p>
-              </div>
-              <span>1 min ago</span>
+        {/* Chat Rooms Section */}
+        <div className="item online-friends">
+          <span>Chat Rooms</span>
+          {isChatLoading ? (
+            <div className="flex justify-center py-4">
+              <ClipLoader size={20} color="#3b82f6" />
             </div>
-          ))}
-        </div> */}
-
-        {/* Online Friends Section */}
-        {/* <div className="item online-friends">
-          <span>Online Friends</span>
-          {[5, 6, 7, 8].map((item) => (
-            <div 
-              key={item} 
-              className="friend"
-              onClick={() => handleOpenChat(`User${item}`)}
-            >
-              <div className="avatar-container">
-                <img
-                  src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg"
-                  alt={`User ${item}`}
-                  className="avatar"
-                />
-                <span className="online-badge"></span>
-              </div>
-              <span className="username">User{item}</span>
+          ) : chatError ? (
+            <div className="error-message">
+              {chatError}
+              <button
+                onClick={() => setRooms([])}
+                className="dismiss-btn"
+              >
+                Dismiss
+              </button>
             </div>
-          ))}
-        </div> */}
+          ) : rooms.length === 0 ? (
+            <p className="text-gray-500 py-2">No chat rooms available</p>
+          ) : (
+            rooms.map((room) => (
+              <div
+                key={room.id}
+                className="friend"
+                onClick={() => handleOpenChat(room.name)}
+              >
+                <div className="avatar-container">
+                  {/* <img
+                    src="/default-avatar.png"
+                    alt={room.name}
+                    className="avatar"
+                  /> */}
+                  <span className="online-badge"></span>
+                </div>
+                <span className="username">{room.name}</span>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Chat Box */}
       {openChat && (
-        <ChatBox 
-          username={chatUser} 
-          onClose={() => setOpenChat(false)} 
-        />
+        <ChatBox username={chatUser} onClose={() => setOpenChat(false)} />
       )}
     </div>
   );
