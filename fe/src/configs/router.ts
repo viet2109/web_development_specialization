@@ -1,5 +1,5 @@
 const routers = {
-  home: "/",
+  home: "/home",
   login: "/login",
   register: "/register",
   notFound: "*",
