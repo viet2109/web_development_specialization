@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "../redux/store";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API || "http://localhost:8081",
+  baseURL: import.meta.env.VITE_BASE_API || "http://localhost:8080",
   withCredentials: true,
 });
 
