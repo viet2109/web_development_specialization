@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,6 +29,7 @@ public class AuthController {
 
     @Value("${app.server.url}")
     private String url;
+
 
     @Operation(
             summary = "User Login",
@@ -47,7 +49,9 @@ public class AuthController {
     public ResponseEntity<UserLoginResponseDto.UserInfo> signup(
             @RequestBody @Valid UserSignUpRequest userSignUpRequest) {
         UserLoginResponseDto.UserInfo user = authService.signUp(userSignUpRequest);
+
         String verificationUrl = url + "/auth/verify?token="
+
                 + authService.createVerificationToken(user.getId());
         emailService.sendSimpleMessage(userSignUpRequest.getEmail(), "Verify account",
                 "Please click the link to verify your account: " + verificationUrl);
