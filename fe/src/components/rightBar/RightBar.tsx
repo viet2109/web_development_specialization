@@ -159,7 +159,7 @@ const RightBar: React.FC = () => {
 
       {/* Chat Box */}
       {openChat && (
-        <ChatBox username={chatUser} onClose={() => setOpenChat(false)} />
+        <ChatBox username={chatUser} senderId={1} roomId={1} onClose={() => setOpenChat(false)} />
       )}
     </div>
   );
