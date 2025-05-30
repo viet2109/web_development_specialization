@@ -37,7 +37,7 @@ const Login = () => {
       console.log('Token stored:', localStorage.getItem('token'));
 
       dispatch(loginSuccess({ user, token: accessToken }));
-      navigate('/');
+      navigate('/home');
 
       toast.success('🎉 Login successful!', {
         position: 'top-center',

@@ -17,6 +17,8 @@ import shareReducer from "./shareSlice";
 import  postReducer  from "./postSlice";
 import commentsReducer from "./commentSlice";
 import friendRequestReducer from "./friendRequestSlice";
+import chatRoomReducer from "./chatRoomSlice";
+import messageReducer from "./messageSlice";
 const authConfig = {
   key: "auth",
   storage,
@@ -25,10 +27,14 @@ const authConfig = {
 const rootReducer = combineReducers({
   app: appReducer,
   auth: persistReducer(authConfig, authReducer),
+   chatRoom: chatRoomReducer,
+  message: messageReducer,
   share : shareReducer,
   comment : commentsReducer,
   posts : postReducer,
   friendRequest: friendRequestReducer, 
+ 
+
   
 });
 
