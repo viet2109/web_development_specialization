@@ -4,7 +4,7 @@ import { loginSuccess } from "../../redux/authSlice";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import "./login.css";
+import "./Login.css";
 import { api } from "../../api/api";
 
 
