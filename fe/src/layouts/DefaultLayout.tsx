@@ -23,7 +23,7 @@ function DefaultLayout(props: Props) {
       </div>
       <main className="main-content">{children}</main>
       <div className="right-bar">
-        {/* <RightBar /> */}
+        <RightBar />
       </div>
     </div>
     
