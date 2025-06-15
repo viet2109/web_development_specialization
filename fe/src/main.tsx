@@ -1,13 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
+import { ToastContainer } from "react-toastify";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./App";
 import { requestForToken } from "./firebase-config";
 import "./index.css";
 import { persistor, store } from "./redux/store";
-import { ToastContainer } from "react-toastify";
-import { setAuthToken } from "./api/api"; // Import hàm setAuthToken
 const queryClient = new QueryClient();
 
 if ("serviceWorker" in navigator) {
@@ -23,17 +22,12 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
-localStorage.clear();
-// Lấy token ban đầu từ store và thiết lập
-const token = store.getState().auth.token;
-setAuthToken(token);
 
 createRoot(document.getElementById("root")!).render(
- 
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <QueryClientProvider client={queryClient}>
-      <ToastContainer/>
+        <ToastContainer />
         <App />
       </QueryClientProvider>
     </PersistGate>

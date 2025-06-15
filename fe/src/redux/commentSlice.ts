@@ -1,11 +1,6 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../api/api";
-
-interface CommentPayload {
-  content: string;
-  postId: number;
-  attachmentFile?: File; // Optional file for attachment
-}
+import { CreateComment } from "../types";
 
 interface CommentsState {
   isPosting: boolean;
@@ -19,22 +14,30 @@ const initialState: CommentsState = {
 
 export const postComment = createAsyncThunk(
   "comments/postComment",
-  async ({ content, postId, attachmentFile }: CommentPayload, { rejectWithValue }) => {
+  async (
+    { content, parentId, attachmentFile }: CreateComment,
+    { rejectWithValue }
+  ) => {
     try {
       const formData = new FormData();
       formData.append("content", content);
       if (attachmentFile) {
         formData.append("attachmentFile", attachmentFile);
       }
+      if (parentId) {
+        formData.append("parentId", parentId.toString());
+      }
 
-      const response = await api.post(`/posts/${postId}/comments`, formData, {
+      const response = await api.post(`/posts/${1}/comments`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to post comment");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to post comment"
+      );
     }
   }
 );
