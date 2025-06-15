@@ -15,6 +15,6 @@ public class SecurityService {
     private final UserDao userDao;
 
     public User getUserFromRequest() {
-        return userDao.findByEmail(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
+        return userDao.findByEmail(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).orElse(null);
     }
 }

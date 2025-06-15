@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ public class PostCommentService {
     private final PostCommentAttachmentReactionDao postCommentAttachmentReactionDao;
     private final PostDao postDao;
     private final FileService fileService;
+    private final SecurityService securityService;
 
     @Transactional
     public CommentResponseDto createComment(Long postId, CreateCommentRequestDto dto) {
@@ -35,7 +36,11 @@ public class PostCommentService {
         if (dto.getParentId() != null) {
             comment.setParent(commentDao.findById(dto.getParentId()).orElseThrow(() -> new AppException(AppError.COMMENT_NOT_FOUND)));
         }
-        comment.setCreator(getUserFromRequest());
+        User currentUser = securityService.getUserFromRequest();
+        if (currentUser == null) {
+            throw new AppException(AppError.USER_NOT_FOUND);
+        }
+        comment.setCreator(currentUser);
         if (dto.getAttachmentFile() != null) {
             File file = fileService.upload(dto.getAttachmentFile());
             PostCommentAttachment attachment = new PostCommentAttachment();
@@ -45,7 +50,29 @@ public class PostCommentService {
         }
         comment.setPost(post);
         PostComment savedComment = commentDao.save(comment);
-        return commentMapper.entityToDto(savedComment);
+        return getCommentResponseDto(savedComment);
+    }
+
+    private CommentResponseDto getCommentResponseDto(PostComment savedComment) {
+        CommentResponseDto responseDto = commentMapper.entityToDto(savedComment);
+        if (savedComment.getParent() != null) {
+            responseDto.setParentId(savedComment.getParent().getId());
+        }
+        User currentUser = securityService.getUserFromRequest();
+        Set<PostCommentReaction> reactions = savedComment.getReactions();
+        if (currentUser != null && reactions != null) {
+            reactions.stream().filter(reaction -> reaction.getCreator().getId().equals(currentUser.getId())).findFirst().ifPresent(reaction -> {
+                responseDto.setHasReacted(true);
+                responseDto.setUserReactionEmoji(reaction.getEmoji());
+                responseDto.setUserReactionId(reaction.getId());
+            });
+        }
+        responseDto.setTotalChildren(commentDao.countByParent(savedComment));
+        responseDto.setReactionSummary(postCommentReactionDao.getReactionSummaryByComment(savedComment));
+        if (responseDto.getAttachment() != null) {
+            responseDto.getAttachment().setReactionSummary(postCommentAttachmentReactionDao.getReactionSummaryByAttachment(savedComment.getAttachment()));
+        }
+        return responseDto;
     }
 
     public Page<CommentResponseDto> getComments(Long parentId, Long postId, Pageable pageable) {
@@ -60,18 +87,7 @@ public class PostCommentService {
             spec = spec.and(PostCommentSpecification.hasPostId(postId));
         }
 
-        return commentDao.findAll(spec, pageable).map(comment -> {
-            CommentResponseDto dto = commentMapper.entityToDto(comment);
-            dto.setTotalChildren(commentDao.countByParent(comment));
-            dto.setReactionSummary(postCommentReactionDao.getReactionSummaryByComment(comment));
-            if (dto.getAttachment() != null) {
-                dto.getAttachment().setReactionSummary(postCommentAttachmentReactionDao.getReactionSummaryByAttachment(comment.getAttachment()));
-            }
-            return dto;
-        });
+        return commentDao.findAll(spec, pageable).map(this::getCommentResponseDto);
     }
 
-    private User getUserFromRequest() {
-        return userDao.findByEmail(((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()).orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
-    }
 }

@@ -11,14 +11,16 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { api } from "../api/api";
 import appReducer from "./appSlice";
 import authReducer from "./authSlice";
-import shareReducer from "./shareSlice";
-import  postReducer  from "./postSlice";
+import chatRoomReducer from "./chatRoomSlice";
 import commentsReducer from "./commentSlice";
 import friendRequestReducer from "./friendRequestSlice";
-import chatRoomReducer from "./chatRoomSlice";
 import messageReducer from "./messageSlice";
+import postReducer from "./postSlice";
+import shareReducer from "./shareSlice";
+
 const authConfig = {
   key: "auth",
   storage,
@@ -27,15 +29,12 @@ const authConfig = {
 const rootReducer = combineReducers({
   app: appReducer,
   auth: persistReducer(authConfig, authReducer),
-   chatRoom: chatRoomReducer,
+  chatRoom: chatRoomReducer,
   message: messageReducer,
-  share : shareReducer,
-  comment : commentsReducer,
-  posts : postReducer,
-  friendRequest: friendRequestReducer, 
- 
-
-  
+  share: shareReducer,
+  comment: commentsReducer,
+  posts: postReducer,
+  friendRequest: friendRequestReducer,
 });
 
 export const store = configureStore({
@@ -48,7 +47,21 @@ export const store = configureStore({
     }),
 });
 
-export const persistor = persistStore(store);
+api.interceptors.request.use(
+  (config) => {
+    const token = store.getState().auth.token;
 
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
