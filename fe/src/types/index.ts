@@ -30,7 +30,7 @@ export interface Post {
 
 export interface Attachment {
   id: number;
-  file: File;
+  file: FileDto;
 }
 
 export interface CommentResponse {
