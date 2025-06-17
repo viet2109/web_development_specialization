@@ -47,16 +47,13 @@ self.onnotificationclick = (event) => {
         .then((clientList) => {
           for (const client of clientList) {
             if (
-              client.url ===
-                "https://web-development-specialization-omega.vercel.app/friends/received" &&
+              client.url === "http://localhost:5173/friends/received" &&
               "focus" in client
             )
               return client.focus();
           }
           if (clients.openWindow)
-            return clients.openWindow(
-              "https://web-development-specialization-omega.vercel.app/friends/received"
-            );
+            return clients.openWindow("http://localhost:5173/friends/received");
         })
     );
   }
