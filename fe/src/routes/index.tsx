@@ -3,7 +3,7 @@ import DefaultLayout from "../layouts/DefaultLayout";
 import FriendsLayout from "../layouts/FriendsLayout";
 import FriendRequestsPage from "../pages/FriendRequestsPage";
 import FriendsList from "../pages/FriendsList";
-import Home from "../pages/home/Home";
+import Home from "../pages/Home";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";

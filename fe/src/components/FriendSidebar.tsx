@@ -32,14 +32,14 @@ function FriendSidebar() {
   ];
 
   return (
-    <Fragment>
+    <div className="pt-6 space-y-3">
       {navItems.map((item, index) => (
         <NavLink
           end
           key={index}
           to={item.to}
           className={({ isActive }) =>
-            `flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${
+            `flex items-center justify-between p-4 rounded-xl transition-colors ${
               isActive
                 ? "bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -87,7 +87,7 @@ function FriendSidebar() {
           )}
         </NavLink>
       ))}
-    </Fragment>
+    </div>
   );
 }
 

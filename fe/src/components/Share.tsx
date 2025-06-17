@@ -18,11 +18,10 @@ import {
   FaSmile,
   FaSpinner,
   FaTimes,
-  FaUser,
-  FaUserTag,
+  FaUserTag
 } from "react-icons/fa";
-import { useAppDispatch, useAppSelector } from "../../hook/hook";
-import { sharePost } from "../../redux/shareSlice";
+import { useAppDispatch, useAppSelector } from "../hook/hook";
+import { sharePost } from "../redux/shareSlice";
 
 const Share = () => {
   const [files, setFiles] = useState<File[]>([]);
@@ -186,17 +185,15 @@ const Share = () => {
       <div className="p-6">
         <div className="flex items-start gap-4 mb-4">
           <div className="relative">
-            {currentUser.avatar?.path ? (
-              <img
-                src={currentUser.avatar.path}
-                alt="avatar"
-                className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 dark:ring-blue-900"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-                <FaUser className="w-6 h-6 text-white" />
-              </div>
-            )}
+            <img
+              src={
+                currentUser.avatar?.path ||
+                `https://ui-avatars.com/api/?name=${currentUser.firstName}+${currentUser.lastName}&background=3b82f6&color=ffffff&size=64`
+              }
+              alt={`avatar`}
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 dark:ring-blue-900"
+            />
+
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
           </div>
 
@@ -297,7 +294,7 @@ const Share = () => {
         <hr className="my-5 border-gray-200 dark:border-gray-600" />
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4 flex-6">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 flex-9">
             <input
               type="file"
               id="file"
@@ -319,28 +316,28 @@ const Share = () => {
               className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 group"
             >
               <FaPaperclip className="w-4 h-4 text-blue-500 group-hover:text-blue-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
+              <span className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
                 Đính kèm tệp {files.length > 0 && `(${files.length})`}
               </span>
             </label>
 
             <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 group">
               <FaMapMarkerAlt className="w-4 h-4 text-red-500 group-hover:text-red-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
+              <span className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
                 Địa điểm
               </span>
             </button>
 
             <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 group">
               <FaUserTag className="w-4 h-4 text-blue-500 group-hover:text-blue-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
+              <span className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
                 Gắn thẻ
               </span>
             </button>
 
             <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 group">
               <FaSmile className="w-4 h-4 text-yellow-500 group-hover:text-yellow-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
+              <span className=" font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">
                 Cảm xúc
               </span>
             </button>
@@ -354,7 +351,9 @@ const Share = () => {
             {isLoading ? (
               <>
                 <FaSpinner className="w-4 h-4 animate-spin" />
-                <span className="hidden sm:inline line-clamp-1">Đang chia sẻ...</span>
+                <span className="hidden sm:inline line-clamp-1">
+                  Đang chia sẻ...
+                </span>
               </>
             ) : (
               <span className="line-clamp-1">Chia sẻ</span>

@@ -15,27 +15,27 @@ import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useAppSelector } from "../../hook/hook";
 import {
   Attachment,
   Post as PostType,
   ReactionResponse,
   ReactionSummary,
-} from "../../types";
-import Comments from "../comments/Comments";
+} from "../types";
 
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
-import { FaUser } from "react-icons/fa";
 import {
   MdImage,
   MdImageNotSupported,
   MdVideocam,
   MdVideocamOff,
 } from "react-icons/md";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { reactPost } from "../../api/post";
-import { deleteReaction, updateReaction } from "../../api/reaction";
+import { reactPost } from "../api/post";
+import { deleteReaction, updateReaction } from "../api/reaction";
+import { RootState } from "../redux/store";
+import Comments from "./Comments";
 
 interface PostProps {
   post: PostType;
@@ -50,7 +50,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const heartButtonRef = useRef<HTMLButtonElement>(null);
 
-  const currentUser = useAppSelector((state) => state.auth.user);
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
 
   const LazyImage = React.memo(
@@ -114,7 +114,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
             alt={alt}
             className={`${className} ${
               isLoaded ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-300 absolute inset-0 w-full h-full object-cover`}
+            } transition-opacity duration-300 absolute inset-0 w-full h-full ${width?'object-cover':'object-contain'}`}
             onClick={onClick}
             onLoad={handleLoad}
             onError={handleError}
@@ -819,17 +819,14 @@ const Post: React.FC<PostProps> = ({ post }) => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
               <div className="relative">
-                {post.creator.avatar?.path ? (
-                  <img
-                    src={post.creator.avatar.path}
-                    alt={`Ảnh đại diện của ${post.creator.firstName}`}
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-transparent group-hover:ring-blue-100 dark:group-hover:ring-blue-900 transition-all duration-200"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-                    <FaUser className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                <img
+                  src={
+                    post.creator?.avatar?.path ||
+                    `https://ui-avatars.com/api/?name=${post.creator?.firstName}+${post.creator?.lastName}&background=3b82f6&color=ffffff&size=64`
+                  }
+                  alt={`avatar`}
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-transparent group-hover:ring-blue-100 dark:group-hover:ring-blue-900 transition-all duration-200"
+                />
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-900"></div>
               </div>
               <div className="flex flex-col min-w-0 flex-1">

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../rightBar/RightBar.css";
-import ChatBox from "../chatBox/ChatBox";
 import { useAppDispatch, useAppSelector } from "../../hook/hook";
 import {
   fetchFriendRequests,
@@ -156,11 +155,6 @@ const RightBar: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* Chat Box */}
-      {openChat && (
-        <ChatBox username={chatUser} senderId={1} roomId={1} onClose={() => setOpenChat(false)} />
-      )}
     </div>
   );
 };

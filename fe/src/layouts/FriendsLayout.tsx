@@ -1,13 +1,16 @@
 // layouts/HeaderSidebarWrapper.tsx
 import { ReactNode } from "react";
-import HeaderSideBarLayout from "./HeaderSideBarLayout";
-import Navbar from "../components/navBar/NavBar";
 import FriendSidebar from "../components/FriendSidebar";
+import Navbar from "../components/NavBar";
+import HeaderSidebarRightbarLayout from "./HeaderSidebarRightbarLayout";
 
 export default function FriendsLayout({ children }: { children: ReactNode }) {
   return (
-    <HeaderSideBarLayout header={<Navbar />} sidebar={<FriendSidebar />}>
+    <HeaderSidebarRightbarLayout
+      header={<Navbar />}
+      sidebar={<FriendSidebar />}
+    >
       {children}
-    </HeaderSideBarLayout>
+    </HeaderSidebarRightbarLayout>
   );
 }

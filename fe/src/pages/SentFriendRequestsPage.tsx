@@ -5,15 +5,14 @@ import {
 } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
-import React, { Fragment, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
-  RiClockwise2Line,
   RiErrorWarningFill,
   RiLoader4Line,
   RiSendPlaneFill,
   RiTimeFill,
   RiUserSearchLine,
-  RiUserShared2Fill,
+  RiUserShared2Fill
 } from "react-icons/ri";
 import { Virtuoso } from "react-virtuoso";
 import { deleteRequest, getFriendRequestSent } from "../api/friendsRequest";
@@ -174,7 +173,7 @@ const SentFriendRequestsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Fragment>
+      <div className="pt-1">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex gap-3 items-center">
@@ -214,13 +213,13 @@ const SentFriendRequestsPage: React.FC = () => {
             </div>
           ))}
         </div>
-      </Fragment>
+      </div>
     );
   }
 
   if (isError) {
     return (
-      <Fragment>
+      <div className="pt-1">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex gap-3 items-center">
@@ -256,14 +255,14 @@ const SentFriendRequestsPage: React.FC = () => {
             Thử lại
           </button>
         </div>
-      </Fragment>
+      </div>
     );
   }
 
   const totalCount = data?.pages?.[0]?.page?.totalElements ?? 0;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex pt-1 flex-col min-h-screen">
       {/* Page Header */}
       <div className="mb-8">
         <div className="flex gap-3 items-center">

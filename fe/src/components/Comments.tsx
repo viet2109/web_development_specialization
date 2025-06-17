@@ -8,7 +8,6 @@ import { vi } from "date-fns/locale";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { BiFile } from "react-icons/bi";
-import { FaUser } from "react-icons/fa";
 import {
   FiChevronDown,
   FiHeart,
@@ -21,15 +20,15 @@ import {
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { Virtuoso } from "react-virtuoso";
-import { createComment, fetchComments, reactComment } from "../../api/comment";
-import { deleteReaction, updateReaction } from "../../api/reaction";
-import { RootState } from "../../redux/store";
+import { createComment, fetchComments, reactComment } from "../api/comment";
+import { deleteReaction, updateReaction } from "../api/reaction";
+import { RootState } from "../redux/store";
 import {
   CommentResponse,
   CreateComment,
   ReactionResponse,
   ReactionSummary,
-} from "../../types";
+} from "../types";
 
 // Loading Button Component
 const LoadingButton: React.FC<{
@@ -282,17 +281,14 @@ const CommentItem: React.FC<{
         } bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm`}
       >
         <div className="flex items-start space-x-3">
-          {currentUser?.avatar?.path ? (
-            <img
-              src={currentUser.avatar.path}
-              alt="Your avatar"
-              className="w-9 h-9 rounded-full object-cover ring-2 ring-gradient-to-r from-blue-400 to-purple-400"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-              <FaUser className="w-4 h-4 text-white" />
-            </div>
-          )}
+          <img
+            src={
+              currentUser.avatar?.path ||
+              `https://ui-avatars.com/api/?name=${currentUser.firstName}+${currentUser.lastName}&background=3b82f6&color=ffffff&size=64`
+            }
+            alt={`avatar`}
+            className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-100 dark:ring-blue-900"
+          />
 
           <div className="flex-1 space-y-3">
             <textarea
@@ -394,17 +390,14 @@ const CommentItem: React.FC<{
       <div className="flex items-start space-x-4">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          {comment.creator.avatar?.path ? (
-            <img
-              src={comment.creator.avatar.path}
-              alt={`${comment.creator.firstName}'s avatar`}
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-600"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-              <FaUser className="w-4 h-4 text-white" />
-            </div>
-          )}
+          <img
+            src={
+              comment.creator.avatar?.path ||
+              `https://ui-avatars.com/api/?name=${comment.creator.firstName}+${comment.creator.lastName}&background=3b82f6&color=ffffff&size=64`
+            }
+            alt={`avatar`}
+            className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-100 dark:ring-blue-900"
+          />
         </div>
 
         {/* Comment Content */}
@@ -1260,18 +1253,14 @@ const Comments: React.FC<{ postId?: number }> = ({ postId = 1 }) => {
       {/* Comment Input */}
       <div className="bg-gray-100 mx-6 mt-3 dark:bg-gray-800 rounded-2xl px-4 py-5 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-200">
         <div className="flex items-start space-x-4">
-          {currentUser?.avatar?.path ? (
-            <img
-              src={currentUser.avatar.path}
-              alt="Your avatar"
-              className="w-12 h-12 rounded-full object-cover ring-2 ring-gradient-to-r from-blue-400 to-purple-400"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
-              <FaUser className="w-4 h-4 text-white" />
-            </div>
-          )}
-
+          <img
+            src={
+              currentUser?.avatar?.path ||
+              `https://ui-avatars.com/api/?name=${currentUser?.firstName}+${currentUser?.lastName}&background=3b82f6&color=ffffff&size=64`
+            }
+            alt={`avatar`}
+            className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 dark:ring-blue-900"
+          />
           <div className="flex-1 space-y-4">
             <textarea
               value={newComment}
@@ -1411,7 +1400,9 @@ const Comments: React.FC<{ postId?: number }> = ({ postId = 1 }) => {
                   />
                 </div>
               )}
-              style={{ height: "800px" }}
+              style={{
+                minHeight: comments.length < 3 ? "50vh" : "100vh",
+              }}
               className="bg-transparent"
             />
 

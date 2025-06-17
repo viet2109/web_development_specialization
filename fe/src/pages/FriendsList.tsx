@@ -347,8 +347,8 @@ const FriendsList: FC = () => {
 
   return (
     <div className="h-full flex flex-col min-h-screen">
-      <div className="sticky top-16 z-20 backdrop-blur-lg mb-6">
-        <div className="flex items-center justify-between mb-6 pt-6">
+      <div className="sticky top-[116px] z-20 backdrop-blur-lg mb-6">
+        <div className="flex items-center justify-between mb-6 -mt-2.5">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
               <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />

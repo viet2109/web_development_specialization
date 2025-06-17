@@ -2,11 +2,11 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { Virtuoso } from "react-virtuoso";
-import { api } from "../../api/api";
-import routers from "../../configs/router";
-import { useAppSelector } from "../../hook/hook";
-import { Page, Post } from "../../types";
-import PostCom from "../post/Post";
+import { api } from "../api/api";
+import routers from "../configs/router";
+import { useAppSelector } from "../hook/hook";
+import { Page, Post } from "../types";
+import PostCom from "../components/Post";
 
 const Posts = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -226,7 +226,7 @@ const Posts = () => {
 
   // Header component
   const Header = () => (
-    <div className="mb-6 mt-8">
+    <div className="mb-6">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-lg p-6 border border-gray-100 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
           Bảng tin
@@ -273,8 +273,8 @@ const Posts = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-slate-800">
-      <div className="max-w-2xl flex-1">
+    <div className="min-h-screen flex justify-center">
+      <div className="flex-1">
         {isLoading ? (
           <div className="py-8">
             <Header />

@@ -124,7 +124,7 @@ const FriendRequestsPage: React.FC = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="">
+      <div>
         <div className="mb-8">
           <div className="flex gap-3 items-center">
             <div className="p-2 w-10 h-10 flex items-center bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-xl">
@@ -186,7 +186,7 @@ const FriendRequestsPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex pt-1 flex-col min-h-screen">
       {/* Page Title */}
       <div className="mb-8">
         <div className="flex gap-3 items-center">

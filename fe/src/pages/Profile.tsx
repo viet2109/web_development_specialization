@@ -7,10 +7,10 @@ import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Posts from "../../components/posts/Posts";
+import Posts from "../components/Posts";
 import { useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useAppSelector } from "../../hook/hook";
+import { useAppSelector } from "../hook/hook";
 
 interface User {
   id: number;
