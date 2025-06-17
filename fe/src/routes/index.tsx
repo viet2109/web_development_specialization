@@ -17,6 +17,7 @@ const publicRoutes: Route[] = [
 
 const privateRoutes: Route[] = [
   { path: routers.home, page: Home, layout: DefaultLayout },
+  { path: routers.root, page: Home, layout: DefaultLayout },
   { path: routers.friends, page: FriendsList, layout: FriendsLayout },
   {
     path: routers.friendsReceived,
