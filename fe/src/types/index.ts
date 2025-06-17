@@ -13,7 +13,7 @@ export interface User {
   phone: string;
   birthDate: string;
   bio: string;
-  avatar?: FileDto; // File object trong browser
+  avatar?: FileDto;
 }
 
 export interface Post {
@@ -26,6 +26,9 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   totalComments: number;
+  hasReacted?: boolean;
+  userReactionEmoji?: string;
+  userReactionId?: number;
 }
 
 export interface Attachment {
@@ -60,10 +63,22 @@ export interface CreateComment {
   attachmentFile?: File;
 }
 
-interface Pageable {
+export interface Pageable {
   page?: number;
   size?: number;
   sort?: string[];
+}
+
+export interface FriendshipFilter extends Pageable {
+  name?: string;
+}
+
+export interface FriendShipRequestResponse {
+  id: number;
+  sender: User;
+  receiver: User;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AttachmentWithReactions {
@@ -108,6 +123,13 @@ export interface Route {
   layout?: FC<any>;
 }
 
+export interface Friendship {
+  id: number;
+  user1: User;
+  user2: User;
+  createdAt: string;
+}
+
 export interface ReactionResponse {
   id: number;
   creator: User;
@@ -116,14 +138,12 @@ export interface ReactionResponse {
   updatedAt: string;
 }
 
-
 export interface Page<T> {
   content: T[];
   totalPages: number;
   totalElements: number;
   number: number;
   size: number;
-  
 }
 
 export interface Contact {
@@ -142,7 +162,7 @@ export interface Member {
     email: string;
     firstName: string;
     lastName: string | null;
-    activeStatus: 'ONLINE' | 'OFFLINE';
+    activeStatus: "ONLINE" | "OFFLINE";
     avatar: string | null;
   };
   roles: string[];
@@ -163,8 +183,9 @@ export interface ChatRoom {
 }
 
 export interface Message {
+  id: number;
   fromMe: boolean;
-  type: 'text' | 'image';
+  type: "text" | "image";
   content: string;
   createdAt: string;
 }
@@ -181,7 +202,6 @@ export interface APIMessage {
   attachments: { url: string }[];
 }
 
-
 export interface MessageResponse {
   id: number;
   content: string;
@@ -190,7 +210,7 @@ export interface MessageResponse {
   attachments: Attachment[];
 }
 export interface MessageFilterParams {
- page: number;
+  page: number;
   size: number;
   sort: string[];
 }
@@ -201,10 +221,9 @@ export interface ChatRoomFilterParams {
   memberId: number;
 }
 export interface SendMessagePayload {
- roomId: number;
+  roomId: number;
   content: string;
   repliedTargetId?: number;
   repliedTargetType?: string;
   files?: File[];
-
 }

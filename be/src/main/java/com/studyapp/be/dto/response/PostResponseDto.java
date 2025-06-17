@@ -22,4 +22,7 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private long totalComments;
+    private boolean hasReacted;
+    private String userReactionEmoji;
+    private Long userReactionId;
 }

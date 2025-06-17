@@ -1,5 +1,5 @@
-import Posts from "../../components/posts/Posts";
-import Share from "../../components/share/Share";
+import Posts from "../components/Posts";
+import Share from "../components/Share";
 
 interface Props {}
 

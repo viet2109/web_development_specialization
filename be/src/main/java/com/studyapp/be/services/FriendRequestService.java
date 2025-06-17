@@ -67,7 +67,7 @@ public class FriendRequestService {
         friendRequestDao.delete(friendShipRequest);
         fcmService.sendToUser(sender.getId(), "Friend Request Accepted", receiver.getFirstName() + " accepted your friend request! Tap to start chatting.", Map.of("type", "friend_request_accepted", "receiverId", receiver.getId().toString()));
         chatRoomService.createChatRoom(CreateChatRoomRequest.builder()
-                .memberIds(Set.of(receiver.getId()))
+                .memberIds(Set.of(sender.getId()))
                 .chatType(ChatRoomType.PRIVATE)
                 .build());
     }
@@ -75,7 +75,8 @@ public class FriendRequestService {
     @Transactional
     public void deleteRequest(Long id) {
         FriendShipRequest friendShipRequest = friendRequestDao.findById(id).orElseThrow(() -> new AppException(AppError.FRIEND_REQUEST_NOT_FOUND));
-        if (!securityService.getUserFromRequest().getId().equals(friendShipRequest.getSender().getId()) || securityService.getUserFromRequest().getId().equals(friendShipRequest.getReceiver().getId())) {
+        if (!securityService.getUserFromRequest().getId().equals(friendShipRequest.getSender().getId()) && !securityService.getUserFromRequest().getId().equals(friendShipRequest.getReceiver().getId())) {
+           log.info("{}, {}, {}", securityService.getUserFromRequest().getId(), friendShipRequest.getSender().getId(), friendShipRequest.getReceiver().getId());
             throw new AppException(AppError.AUTH_ACCESS_DENIED);
         }
         friendRequestDao.delete(friendShipRequest);

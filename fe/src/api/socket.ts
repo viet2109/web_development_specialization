@@ -1,6 +1,6 @@
-import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { Message, APIMessage, SendMessagePayload } from '../types';
+import { Client, IMessage } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { APIMessage, Message, SendMessagePayload } from "../types";
 
 interface Subscription {
   roomId: string;
@@ -17,19 +17,20 @@ class WebSocketService {
     if (this.client?.connected) return;
 
     this.client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8081/ws'),
+      webSocketFactory: () =>
+        new SockJS("https://java-app-6euq.onrender.com/ws"),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       connectHeaders: {
-        'user-id': userId.toString(),
+        "user-id": userId.toString(),
         ...(token && { Authorization: `Bearer ${token}` }),
       },
-      debug: (str) => console.debug('[WS]', str),
+      debug: (str) => console.debug("[WS]", str),
     });
 
     this.client.onConnect = () => {
-      console.log('WebSocket connected');
+      console.log("WebSocket connected");
       // Re-subscribe to all rooms on reconnect
       this.subscriptions.forEach(({ roomId, callback }) => {
         this.subscribeToRoomInternal(roomId, callback);
@@ -38,19 +39,22 @@ class WebSocketService {
     };
 
     this.client.onStompError = (frame) => {
-      const errorMsg = frame.headers.message || 'Unknown STOMP error';
-      console.error('STOMP error:', errorMsg);
+      const errorMsg = frame.headers.message || "Unknown STOMP error";
+      console.error("STOMP error:", errorMsg);
       this.onErrorCallbacks.forEach((cb) => cb(errorMsg));
     };
 
     this.client.onDisconnect = () => {
-      console.log('WebSocket disconnected');
+      console.log("WebSocket disconnected");
     };
 
     this.client.activate();
   }
 
-  private subscribeToRoomInternal(roomId: string, callback: (msg: Message) => void) {
+  private subscribeToRoomInternal(
+    roomId: string,
+    callback: (msg: Message) => void
+  ) {
     if (!this.client?.connected) return;
 
     const subscription = this.client.subscribe(
@@ -60,15 +64,20 @@ class WebSocketService {
           const apiMsg: APIMessage = JSON.parse(message.body);
           // Map APIMessage to Message
           const msg: Message = {
-              fromMe: apiMsg.sender.id === Number(this.client?.connectHeaders['user-id']),
-              type: apiMsg.attachments.length > 0 ? 'image' : 'text',
-              content: apiMsg.attachments.length > 0 ? apiMsg.attachments[0].url : apiMsg.content,
-              createdAt: apiMsg.createdAt,
-              id: apiMsg.id, // Use API message ID for deduplication
+            fromMe:
+              apiMsg.sender.id ===
+              Number(this.client?.connectHeaders["user-id"]),
+            type: apiMsg.attachments.length > 0 ? "image" : "text",
+            content:
+              apiMsg.attachments.length > 0
+                ? apiMsg.attachments[0].url
+                : apiMsg.content,
+            createdAt: apiMsg.createdAt,
+            id: apiMsg.id, // Use API message ID for deduplication
           };
           callback(msg);
         } catch (error) {
-          console.error('Failed to parse WebSocket message:', error);
+          console.error("Failed to parse WebSocket message:", error);
         }
       }
     );
@@ -95,51 +104,67 @@ class WebSocketService {
   }
 
   unsubscribeFromRoom(roomId: string) {
-    this.subscriptions = this.subscriptions.filter((sub) => sub.roomId !== roomId);
+    this.subscriptions = this.subscriptions.filter(
+      (sub) => sub.roomId !== roomId
+    );
     // STOMP subscription cleanup handled internally by unsubscribe
   }
 
   // Subscribe to room updates (e.g., last message changes)
-  subscribeToRoomUpdates(callback: (update: { roomId: string; lastMessage: string; time: string }) => void) {
+  subscribeToRoomUpdates(
+    callback: (update: {
+      roomId: string;
+      lastMessage: string;
+      time: string;
+    }) => void
+  ) {
     if (!this.client?.connected) {
       this.subscriptions.push({
-        roomId: 'rooms',
+        roomId: "rooms",
         callback: callback as (msg: any) => void, // Type cast for simplicity
       });
-      return () => this.unsubscribeFromRoom('rooms');
+      return () => this.unsubscribeFromRoom("rooms");
     }
 
-    const subscription = this.client.subscribe('/topic/rooms', (message: IMessage) => {
-      try {
-        const update: { roomId: string; lastMessage: string; time: string } = JSON.parse(message.body);
-        callback(update);
-      } catch (error) {
-        console.error('Failed to parse room update:', error);
+    const subscription = this.client.subscribe(
+      "/topic/rooms",
+      (message: IMessage) => {
+        try {
+          const update: { roomId: string; lastMessage: string; time: string } =
+            JSON.parse(message.body);
+          callback(update);
+        } catch (error) {
+          console.error("Failed to parse room update:", error);
+        }
       }
-    });
+    );
 
     this.subscriptions.push({
-      roomId: 'rooms',
+      roomId: "rooms",
       callback: callback as (msg: any) => void,
     });
 
     return () => {
       subscription.unsubscribe();
-      this.unsubscribeFromRoom('rooms');
+      this.unsubscribeFromRoom("rooms");
     };
   }
 
   onConnect(callback: () => void) {
     this.onConnectCallbacks.push(callback);
     return () => {
-      this.onConnectCallbacks = this.onConnectCallbacks.filter((cb) => cb !== callback);
+      this.onConnectCallbacks = this.onConnectCallbacks.filter(
+        (cb) => cb !== callback
+      );
     };
   }
 
   onError(callback: (error: string) => void) {
     this.onErrorCallbacks.push(callback);
     return () => {
-      this.onErrorCallbacks = this.onErrorCallbacks.filter((cb) => cb !== callback);
+      this.onErrorCallbacks = this.onErrorCallbacks.filter(
+        (cb) => cb !== callback
+      );
     };
   }
 
@@ -158,7 +183,7 @@ class WebSocketService {
   // Send message via WebSocket (if backend supports sending via STOMP)
   sendMessage(roomId: string, payload: SendMessagePayload) {
     if (!this.client?.connected) {
-      console.warn('WebSocket not connected, cannot send message');
+      console.warn("WebSocket not connected, cannot send message");
       return;
     }
 

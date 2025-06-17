@@ -101,6 +101,7 @@ public class MessageService {
             List<MessageAttachment> attachments = uploadedFiles.stream().map(file -> {
                 MessageAttachment attachment = new MessageAttachment();
                 attachment.setFile(file);
+                attachment.setMessage(message);
                 return attachment;
             }).toList();
             message.setAttachments(attachments);

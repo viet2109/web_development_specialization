@@ -1,10 +1,8 @@
-import { Fragment, ReactNode } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Navbar from "../components/navBar/NavBar";
-import LeftBar from "../components/leftBar/LeftBar";
+import { ReactNode } from "react";
+import HeaderSidebarRightbarLayout from "./HeaderSidebarRightbarLayout";
+import Navbar from "../components/NavBar";
+import LeftBar from "../components/LeftBar";
 import RightBar from "../components/rightBar/RightBar";
-
 
 interface Props {
   children: ReactNode;
@@ -14,18 +12,13 @@ function DefaultLayout(props: Props) {
   const { children } = props;
 
   return (
-     <div>
-      <Navbar />
-      <div className="layout-container" style={{ paddingTop: '50px' }}> 
-        <div className="left-bar">
-          <LeftBar />
-        </div>
-        <main className="main-content">{children}</main>
-        <div className="right-bar">
-          {/* <RightBar /> */}
-        </div>
-      </div>
-    </div>
+    <HeaderSidebarRightbarLayout
+      header={<Navbar />}
+      sidebar={<LeftBar />}
+      rightbar={<RightBar />}
+    >
+      {children}
+    </HeaderSidebarRightbarLayout>
   );
 }
 

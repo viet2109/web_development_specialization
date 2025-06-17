@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 public class MessageAttachment extends Attachment {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Message message;
 

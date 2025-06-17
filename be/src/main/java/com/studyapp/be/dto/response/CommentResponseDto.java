@@ -25,5 +25,4 @@ public class CommentResponseDto {
     private boolean hasReacted;
     private String userReactionEmoji;
     private Long userReactionId;
-
 }

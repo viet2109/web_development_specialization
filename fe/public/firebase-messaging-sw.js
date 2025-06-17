@@ -15,7 +15,7 @@ const firebaseConfig = {
   storageBucket: "socia-app-2f1e9.firebasestorage.app",
   messagingSenderId: "226916357922",
   appId: "1:226916357922:web:d0fdcdd6bef99ddc75377b",
-  measurementId: "G-CVK2B3444T"
+  measurementId: "G-CVK2B3444T",
 };
 
 // Khởi tạo Firebase app trong service worker
@@ -27,14 +27,37 @@ const messaging = firebase.messaging();
 // Xử lý background message
 messaging.onBackgroundMessage(function (payload) {
   console.log("[firebase-messaging-sw.js] Nhận thông báo background ", payload);
-  const notificationTitle =  payload.data.title || "Thông báo mới";
+  const notificationTitle = payload.data.title || "Thông báo mới";
   const notificationOptions = {
     body: payload.data.body || "content body",
     icon: payload.data.icon || "/firebase-logo.png",
+    data: { ...payload.data },
   };
-
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-
-
+self.onnotificationclick = (event) => {
+  event.notification.close();
+  if (event.notification.data.type === "friend_request") {
+    event.waitUntil(
+      clients
+        .matchAll({
+          type: "window",
+        })
+        .then((clientList) => {
+          for (const client of clientList) {
+            if (
+              client.url ===
+                "https://web-development-specialization-omega.vercel.app/friends/received" &&
+              "focus" in client
+            )
+              return client.focus();
+          }
+          if (clients.openWindow)
+            return clients.openWindow(
+              "https://web-development-specialization-omega.vercel.app/friends/received"
+            );
+        })
+    );
+  }
+};

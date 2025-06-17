@@ -1,6 +1,14 @@
-import { APIMessage, ChatRoom, ChatRoomFilterParams, Contact, Message, MessageFilterParams, MessageResponse, Page } from "../types";
+import {
+  APIMessage,
+  ChatRoom,
+  ChatRoomFilterParams,
+  Contact,
+  Message,
+  MessageFilterParams,
+  MessageResponse,
+  Page,
+} from "../types";
 import { api } from "./api";
-
 
 export const mapRoomToContact = async (
   room: ChatRoom,
@@ -38,7 +46,7 @@ export const mapRoomToContact = async (
 
   const isGroup = room.members.length > 2;
   let displayName = room.name || `Nhóm chat ${room.id}`;
-  let avatar = "/api/placeholder/40/40";
+  let avatar = "";
 
   if (!isGroup) {
     const other = room.members.find((m) => m.user.id !== currentUserId);
@@ -48,7 +56,9 @@ export const mapRoomToContact = async (
       `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
       user?.email ||
       `Người dùng ${user?.id}`;
-    avatar = user?.avatar || "/api/placeholder/40/40";
+    avatar =
+      user?.avatar ||
+      `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=3b82f6&color=ffffff&size=64`;
   }
 
   return {
@@ -63,20 +73,20 @@ export const mapRoomToContact = async (
   };
 };
 
-
-
-
-
 export const formatTime = (dateString?: string) => {
-  if (!dateString) return 'Vừa xong';
+  if (!dateString) return "Vừa xong";
   const date = new Date(dateString);
   const now = new Date();
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
-  if (diffInMinutes < 1) return 'Vừa xong';
+  const diffInMinutes = Math.floor(
+    (now.getTime() - date.getTime()) / 1000 / 60
+  );
+  if (diffInMinutes < 1) return "Vừa xong";
   if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
-  if (diffInMinutes < 24 * 60) return `${Math.floor(diffInMinutes / 60)} giờ trước`;
-  if (diffInMinutes < 7 * 24 * 60) return `${Math.floor(diffInMinutes / (24 * 60))} ngày trước`;
-  return date.toLocaleDateString('vi-VN');
+  if (diffInMinutes < 24 * 60)
+    return `${Math.floor(diffInMinutes / 60)} giờ trước`;
+  if (diffInMinutes < 7 * 24 * 60)
+    return `${Math.floor(diffInMinutes / (24 * 60))} ngày trước`;
+  return date.toLocaleDateString("vi-VN");
 };
 
 export const fetchChatRooms = async (
@@ -110,7 +120,7 @@ export const fetchMessages = async (
         ...filter,
       },
       paramsSerializer: {
-        indexes: null, 
+        indexes: null,
       },
     });
 
@@ -121,45 +131,38 @@ export const fetchMessages = async (
   }
 };
 
-export const sendMessage = async (
-  createMessage: {
-    roomId: number;
-    content: string;
-    repliedTargetId?: number;
-    repliedTargetType?: string;
-    files?: File[];
-  }
-): Promise<Message> => {
+export const sendMessage = async (createMessage: {
+  roomId: number;
+  content: string;
+  repliedTargetId?: number;
+  repliedTargetType?: string;
+  files?: File[];
+}): Promise<Message> => {
   try {
     const formData = new FormData();
-    const {
-      roomId,
-      content,
-      repliedTargetId,
-      repliedTargetType,
-      files,
-    } = createMessage;
+    const { roomId, content, repliedTargetId, repliedTargetType, files } =
+      createMessage;
 
-    formData.append('roomId', roomId.toString());
-    formData.append('content', content);
+    formData.append("roomId", roomId.toString());
+    formData.append("content", content);
 
     if (repliedTargetId !== undefined) {
-      formData.append('repliedTargetId', repliedTargetId.toString());
+      formData.append("repliedTargetId", repliedTargetId.toString());
     }
 
     if (repliedTargetType) {
-      formData.append('repliedTargetType', repliedTargetType);
+      formData.append("repliedTargetType", repliedTargetType);
     }
 
     if (files && files.length > 0) {
-      files.forEach(file => {
-        formData.append('multipartFiles', file);
+      files.forEach((file) => {
+        formData.append("multipartFiles", file);
       });
     }
 
-    const response = await api.post('/messages', formData, {
+    const response = await api.post("/messages", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
 

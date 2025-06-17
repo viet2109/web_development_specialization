@@ -155,8 +155,6 @@ const RightBar: React.FC = () => {
           )}
         </div>
       </div>
-
-      
     </div>
   );
 };
