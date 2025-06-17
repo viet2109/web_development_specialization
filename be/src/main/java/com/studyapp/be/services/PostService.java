@@ -43,12 +43,16 @@ public class PostService {
     private final PostReactionDao reactionDao;
     private final PostCommentDao postCommentDao;
     private final PostReactionDao postReactionDao;
+    private final SecurityService securityService;
 
 
     @Transactional
     public PostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
         Post post = postMapper.dtoToEntity(createPostRequestDto);
-        User user = userDao.findById(getUserFromRequest().getId()).orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
+        User user = securityService.getUserFromRequest();
+        if (user == null) {
+            throw new AppException(AppError.USER_NOT_FOUND);
+        }
         post.setCreator(user);
         if (createPostRequestDto.getSharedPostId() != null) {
             Post sharedPost = postDao.findById(createPostRequestDto.getSharedPostId()).orElseThrow(() -> new AppException(AppError.POST_NOT_FOUND));
@@ -65,16 +69,29 @@ public class PostService {
             }).collect(Collectors.toSet());
             post.setAttachments(attachments);
         }
-        return postMapper.entityToDto(postDao.save(post));
+        Post savedPost = postDao.save(post);
+
+        return postMapper.entityToDto(savedPost);
     }
 
     public Page<PostResponseDto> getRankedPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        User user = securityService.getUserFromRequest();
+
         return postDao.findRankedPostsByUser(getUserFromRequest().getId(), pageable).map(post ->
         {
             PostResponseDto dto = postMapper.entityToDto(post);
             dto.setTotalComments(postCommentDao.countByPost(post));
             dto.setReactionSummary(postReactionDao.getReactionSummaryByPost(post));
+
+            Set<PostReaction> reactions = post.getReactions();
+            if (user != null && reactions != null) {
+                reactions.stream().filter(reaction -> reaction.getCreator().getId().equals(user.getId())).findFirst().ifPresent(reaction -> {
+                    dto.setHasReacted(true);
+                    dto.setUserReactionEmoji(reaction.getEmoji());
+                    dto.setUserReactionId(reaction.getId());
+                });
+            }
             return dto;
         });
     }

@@ -35,8 +35,8 @@ public class FriendShip {
     @PrePersist
     @PreUpdate
     private void normalizeUsersOrder() {
-        if (user1.getId() != null && user2.getId() != null &&
-                user1.getId() > user2.getId()) {
+        if (user1 != null && user2 != null &&
+            user1.getId() > user2.getId()) {
             User temp = user1;
             user1 = user2;
             user2 = temp;

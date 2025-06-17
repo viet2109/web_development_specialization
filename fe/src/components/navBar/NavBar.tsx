@@ -1,23 +1,46 @@
-import React, { useState } from "react";
-import "../navBar/NavBar.css";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  IconButton,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
+import { api } from "../../api/api";
 import { useAppDispatch, useAppSelector } from "../../hook/hook";
 import { logOutSuccess } from "../../redux/authSlice";
 import { fetchMessages } from "../../redux/messageSlice";
-import { Modal, Box, TextField, Button, Typography, List, ListItem, ListItemText, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { ClipLoader } from "react-spinners";
+import { RootState } from "../../redux/store";
 import ChatBox from "../chatBox/ChatBox";
+import routers from "../../configs/router";
 
-// Define Sender interface
 interface Sender {
   id: number;
   email: string;
@@ -40,7 +63,15 @@ interface Message {
   content: string;
 }
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  onMenuToggle?: () => void;
+  showMenuButton?: boolean;
+}
+
+const Navbar: React.FC<NavbarProps> = ({
+  onMenuToggle,
+  showMenuButton = false,
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [openCreateRoom, setOpenCreateRoom] = useState(false);
@@ -49,26 +80,72 @@ const Navbar: React.FC = () => {
   const [roomMemberId, setRoomMemberId] = useState("");
   const [roomType, setRoomType] = useState("private");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedSender, setSelectedSender] = useState<Sender | null>(null); // Track selected conversation
+  const [selectedSender, setSelectedSender] = useState<Sender | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
+  const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
   const { isLoading, error } = useAppSelector((state) => state.message);
+  const fcmToken = useSelector((state: RootState) => state.auth.fcmToken);
+  // Initialize dark mode from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
 
-  const handleClick = async (e: React.MouseEvent<SVGSVGElement>) => {
-    e.preventDefault();
-    try {
-      localStorage.removeItem("token");
-      navigate("/login");
-      dispatch(logOutSuccess());
-    } catch (err) {
-      console.error("Logout failed with error:", err);
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add("dark");
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+
+    if (newMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   };
 
-  const handleOpenCreateRoom = () => setOpenCreateRoom(true);
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    try {
+      await api.delete(`/fcm-tokens/${fcmToken}`);
+      navigate(routers.login);
+      dispatch(logOutSuccess());
+    } catch (err) {
+      console.error("Logout failed with error:", err);
+      return Promise.reject(err);
+    }
+  };
+
+  const handleOpenCreateRoom = () => {
+    setOpenCreateRoom(true);
+    setMobileMenuAnchor(null);
+  };
+
   const handleCloseCreateRoom = () => setOpenCreateRoom(false);
 
   const handleOpenMessages = () => {
     setOpenMessages(true);
-    dispatch(fetchMessages({ page: 0, size: 10, sort: "createdAt,asc", paged: true }))
+    setMobileMenuAnchor(null);
+    dispatch(
+      fetchMessages({ page: 0, size: 10, sort: "createdAt,asc", paged: true })
+    )
       .unwrap()
       .then((data) => {
         console.log("Fetched messages:", data);
@@ -82,10 +159,9 @@ const Navbar: React.FC = () => {
     setMessages([]);
   };
 
-  // Handle clicking a message to open ChatBox
   const handleSelectConversation = (sender: Sender) => {
     setSelectedSender(sender);
-    setOpenMessages(false); // Close Messages Modal
+    setOpenMessages(false);
   };
 
   const handleCloseChatBox = () => {
@@ -101,34 +177,226 @@ const Navbar: React.FC = () => {
     handleCloseCreateRoom();
   };
 
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMobileMenuAnchor(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuAnchor(null);
+  };
+
+  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setUserMenuAnchor(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchor(null);
+  };
+
   return (
-    <div className="navbar">
-      <div className="left">
-        <Link to="/" style={{ textDecoration: "none" }}>
-          <span>Buckety</span>
-        </Link>
-        <HomeOutlinedIcon />
-        <GridViewOutlinedIcon />
-        <div className="search">
-          <SearchOutlinedIcon />
-          <input type="text" placeholder="Search..." />
+    <>
+      <div className="flex items-center justify-between w-full">
+        {/* Left Section */}
+        <div className="flex items-center gap-4">
+          {/* Menu button for sidebar toggle (only show if provided) */}
+          {showMenuButton && onMenuToggle && (
+            <IconButton
+              onClick={onMenuToggle}
+              className="lg:hidden"
+              sx={{ color: isDarkMode ? "#ffffff" : "#374151" }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+
+          <Link to="/" className="no-underline">
+            <span className="font-bold text-xl text-gray-900 dark:text-white">
+              Buckety
+            </span>
+          </Link>
+
+          {/* Desktop Navigation Icons */}
+          <div className="hidden md:flex items-center gap-4">
+            <HomeOutlinedIcon className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors" />
+            <GridViewOutlinedIcon className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors" />
+          </div>
+
+          {/* Search Bar - Hide on mobile */}
+          <div className="hidden lg:flex items-center gap-2.5 rounded-lg p-2 bg-gray-50 dark:bg-gray-800 ml-4">
+            <SearchOutlinedIcon className="text-gray-500 dark:text-gray-400" />
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="border-none w-64 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none text-sm"
+            />
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex items-center gap-3">
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* Dark Mode Toggle */}
+            <IconButton
+              onClick={toggleDarkMode}
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
+              size="small"
+            >
+              {isDarkMode ? (
+                <LightModeIcon className="text-yellow-500" />
+              ) : (
+                <DarkModeIcon className="text-gray-700 dark:text-gray-300" />
+              )}
+            </IconButton>
+
+            <IconButton
+              onClick={handleOpenCreateRoom}
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
+              size="small"
+            >
+              <AddCircleOutlineIcon className="text-gray-700 dark:text-gray-300" />
+            </IconButton>
+
+            <IconButton
+              onClick={handleOpenMessages}
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
+              size="small"
+            >
+              <Badge badgeContent={0} color="error">
+                <ChatOutlinedIcon className="text-gray-700 dark:text-gray-300" />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
+              size="small"
+            >
+              <Badge badgeContent={3} color="error">
+                <NotificationsOutlinedIcon className="text-gray-700 dark:text-gray-300" />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
+              size="small"
+            >
+              <Badge badgeContent={2} color="primary">
+                <EmailOutlinedIcon className="text-gray-700 dark:text-gray-300" />
+              </Badge>
+            </IconButton>
+          </div>
+
+          {/* User Avatar */}
+          <IconButton
+            onClick={handleUserMenuOpen}
+            className="hover:bg-gray-100 dark:hover:bg-gray-800"
+            size="small"
+          >
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                bgcolor: isDarkMode ? "#4f46e5" : "#3b82f6",
+                fontSize: "0.875rem",
+              }}
+            >
+              U
+            </Avatar>
+          </IconButton>
+
+          {/* Mobile Menu Button */}
+          <IconButton
+            onClick={handleMobileMenuOpen}
+            className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-800"
+            size="small"
+          >
+            <MenuIcon className="text-gray-700 dark:text-gray-300" />
+          </IconButton>
         </div>
       </div>
-      <div className="right">
-        <AddCircleOutlineIcon
-          onClick={handleOpenCreateRoom}
-          sx={{ "&:hover": { cursor: "pointer" } }}
-        />
-        <ChatOutlinedIcon
-          onClick={handleOpenMessages}
-          sx={{ "&:hover": { cursor: "pointer" } }}
-        />
-        <PersonOutlinedIcon sx={{ "&:hover": { cursor: "pointer" } }} />
-        <EmailOutlinedIcon sx={{ "&:hover": { cursor: "pointer" } }} />
-        <NotificationsOutlinedIcon sx={{ "&:hover": { cursor: "pointer" } }} />
-        <div className="user"></div>
-        <LogoutIcon onClick={handleClick} sx={{ "&:hover": { cursor: "pointer" } }} />
-      </div>
+
+      {/* User Menu */}
+      <Menu
+        anchorEl={userMenuAnchor}
+        open={Boolean(userMenuAnchor)}
+        onClose={handleUserMenuClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        PaperProps={{
+          sx: {
+            bgcolor: isDarkMode ? "#1f2937" : "#ffffff",
+            color: isDarkMode ? "#ffffff" : "inherit",
+            mt: 1,
+            minWidth: 200,
+          },
+        }}
+      >
+        <MenuItem onClick={handleUserMenuClose}>
+          <PersonOutlinedIcon className="mr-2" />
+          Hồ sơ
+        </MenuItem>
+        <Divider sx={{ bgcolor: isDarkMode ? "#374151" : "inherit" }} />
+        <MenuItem
+          onClick={(e) => {
+            handleLogout(e);
+            handleUserMenuClose();
+          }}
+          sx={{ color: "#ef4444" }}
+        >
+          <LogoutIcon className="mr-2" />
+          Đăng xuất
+        </MenuItem>
+      </Menu>
+
+      {/* Mobile Menu */}
+      <Menu
+        anchorEl={mobileMenuAnchor}
+        open={Boolean(mobileMenuAnchor)}
+        onClose={handleMobileMenuClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        className="md:hidden"
+        PaperProps={{
+          sx: {
+            bgcolor: isDarkMode ? "#1f2937" : "#ffffff",
+            color: isDarkMode ? "#ffffff" : "inherit",
+            mt: 1,
+            minWidth: 250,
+          },
+        }}
+      >
+        <MenuItem onClick={toggleDarkMode}>
+          {isDarkMode ? (
+            <LightModeIcon className="mr-2" />
+          ) : (
+            <DarkModeIcon className="mr-2" />
+          )}
+          {isDarkMode ? "Chế độ sáng" : "Chế độ tối"}
+        </MenuItem>
+        <Divider sx={{ bgcolor: isDarkMode ? "#374151" : "inherit" }} />
+        <MenuItem onClick={handleOpenCreateRoom}>
+          <AddCircleOutlineIcon className="mr-2" />
+          Tạo phòng
+        </MenuItem>
+        <MenuItem onClick={handleOpenMessages}>
+          <Badge badgeContent={0} color="error">
+            <ChatOutlinedIcon className="mr-2" />
+          </Badge>
+          <span className="ml-2">Tin nhắn</span>
+        </MenuItem>
+        <MenuItem onClick={handleMobileMenuClose}>
+          <Badge badgeContent={3} color="error">
+            <NotificationsOutlinedIcon className="mr-2" />
+          </Badge>
+          <span className="ml-2">Thông báo</span>
+        </MenuItem>
+        <MenuItem onClick={handleMobileMenuClose}>
+          <Badge badgeContent={2} color="primary">
+            <EmailOutlinedIcon className="mr-2" />
+          </Badge>
+          <span className="ml-2">Email</span>
+        </MenuItem>
+      </Menu>
 
       {/* Create Room Modal */}
       <Modal open={openCreateRoom} onClose={handleCloseCreateRoom}>
@@ -138,50 +406,104 @@ const Navbar: React.FC = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
+            width: { xs: "90%", sm: 400 },
+            maxWidth: 400,
+            bgcolor: isDarkMode ? "#1f2937" : "background.paper",
+            color: isDarkMode ? "#ffffff" : "inherit",
             boxShadow: 24,
             p: 4,
             borderRadius: 2,
           }}
         >
           <Typography variant="h6" component="h2" gutterBottom>
-            Create New Room
+            Tạo phòng mới
           </Typography>
           <form onSubmit={handleCreateRoomSubmit}>
             <TextField
               fullWidth
-              label="Room Name"
+              label="Tên phòng"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
               margin="normal"
               required
+              sx={{
+                "& .MuiInputLabel-root": {
+                  color: isDarkMode ? "#9ca3af" : "inherit",
+                },
+                "& .MuiOutlinedInput-root": {
+                  color: isDarkMode ? "#ffffff" : "inherit",
+                  "& fieldset": {
+                    borderColor: isDarkMode ? "#4b5563" : "inherit",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: isDarkMode ? "#6b7280" : "inherit",
+                  },
+                },
+              }}
             />
             <TextField
               fullWidth
-              label="Member ID"
+              label="ID thành viên"
               value={roomMemberId}
               onChange={(e) => setRoomMemberId(e.target.value)}
               margin="normal"
               required
+              sx={{
+                "& .MuiInputLabel-root": {
+                  color: isDarkMode ? "#9ca3af" : "inherit",
+                },
+                "& .MuiOutlinedInput-root": {
+                  color: isDarkMode ? "#ffffff" : "inherit",
+                  "& fieldset": {
+                    borderColor: isDarkMode ? "#4b5563" : "inherit",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: isDarkMode ? "#6b7280" : "inherit",
+                  },
+                },
+              }}
             />
             <FormControl fullWidth margin="normal">
-              <InputLabel>Room Type</InputLabel>
+              <InputLabel sx={{ color: isDarkMode ? "#9ca3af" : "inherit" }}>
+                Loại phòng
+              </InputLabel>
               <Select
                 value={roomType}
-                label="Room Type"
+                label="Loại phòng"
                 onChange={(e) => setRoomType(e.target.value as string)}
+                sx={{
+                  color: isDarkMode ? "#ffffff" : "inherit",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: isDarkMode ? "#4b5563" : "inherit",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: isDarkMode ? "#6b7280" : "inherit",
+                  },
+                  "& .MuiSvgIcon-root": {
+                    color: isDarkMode ? "#9ca3af" : "inherit",
+                  },
+                }}
               >
-                <MenuItem value="private">Private</MenuItem>
-                <MenuItem value="group">Group</MenuItem>
+                <MenuItem value="private">Riêng tư</MenuItem>
+                <MenuItem value="group">Nhóm</MenuItem>
               </Select>
             </FormControl>
-            <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-              <Button onClick={handleCloseCreateRoom} sx={{ mr: 1 }}>
-                Cancel
+            <Box
+              sx={{
+                mt: 2,
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 1,
+              }}
+            >
+              <Button
+                onClick={handleCloseCreateRoom}
+                sx={{ color: isDarkMode ? "#9ca3af" : "inherit" }}
+              >
+                Hủy
               </Button>
               <Button type="submit" variant="contained" color="primary">
-                Create
+                Tạo
               </Button>
             </Box>
           </form>
@@ -193,68 +515,102 @@ const Navbar: React.FC = () => {
         open={openMessages}
         onClose={handleCloseMessages}
         BackdropProps={{
-          style: { backgroundColor: "transparent" },
+          style: { backgroundColor: "rgba(0,0,0,0.5)" },
         }}
       >
         <Box
           sx={{
             position: "absolute",
-            top: "19%",
-            left: "89%",
+            top: "50%",
+            left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            boxShadow: 14,
-            p: 4,
+            width: { xs: "90%", sm: 400 },
+            maxWidth: 400,
+            bgcolor: isDarkMode ? "#1f2937" : "background.paper",
+            color: isDarkMode ? "#ffffff" : "inherit",
+            boxShadow: 24,
+            p: 3,
             borderRadius: 2,
-            maxHeight: "80vh",
+            maxHeight: "70vh",
             overflowY: "auto",
           }}
         >
           <Typography variant="h6" component="h2" gutterBottom>
-            Messages
+            Tin nhắn
           </Typography>
           {isLoading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-              <ClipLoader size={20} color="#3b82f6" />
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <ClipLoader size={30} color="#3b82f6" />
             </Box>
           ) : error ? (
             <Box sx={{ color: "#ef4444", textAlign: "center", py: 2 }}>
-              <Typography>{typeof error === "string" ? error : "An error occurred"}</Typography>
+              <Typography>
+                {typeof error === "string" ? error : "Đã xảy ra lỗi"}
+              </Typography>
               <Button
                 onClick={() => setMessages([])}
                 variant="contained"
                 color="primary"
-                sx={{ mt: 1 }}
+                sx={{ mt: 2 }}
               >
-                Dismiss
+                Đóng
               </Button>
             </Box>
           ) : messages.length === 0 ? (
-            <Typography>No messages available.</Typography>
+            <Typography
+              sx={{
+                textAlign: "center",
+                py: 4,
+                color: isDarkMode ? "#9ca3af" : "#6b7280",
+              }}
+            >
+              Không có tin nhắn nào.
+            </Typography>
           ) : (
-            <List>
+            <List sx={{ p: 0 }}>
               {messages.map((message) => (
                 <ListItem
                   key={message.id}
-                  onClick={() => handleSelectConversation(message.sender)} // Open ChatBox
-                  sx={{ "&:hover": { cursor: "pointer", backgroundColor: "#f5f5f5" } }}
+                  onClick={() => handleSelectConversation(message.sender)}
+                  sx={{
+                    borderRadius: 1,
+                    mb: 1,
+                    "&:hover": {
+                      cursor: "pointer",
+                      backgroundColor: isDarkMode ? "#374151" : "#f8fafc",
+                    },
+                  }}
                 >
                   <ListItemText
                     primary={
                       message.sender?.firstName
-                        ? `${message.sender.firstName} ${message.sender.lastName || ""}`
-                        : "Unknown Sender"
+                        ? `${message.sender.firstName} ${
+                            message.sender.lastName || ""
+                          }`
+                        : "Người gửi không xác định"
                     }
-                    secondary={message.content || "No content"}
+                    secondary={message.content || "Không có nội dung"}
+                    sx={{
+                      "& .MuiListItemText-primary": {
+                        color: isDarkMode ? "#ffffff" : "inherit",
+                        fontWeight: 500,
+                      },
+                      "& .MuiListItemText-secondary": {
+                        color: isDarkMode ? "#9ca3af" : "#6b7280",
+                      },
+                    }}
                   />
                 </ListItem>
               ))}
             </List>
           )}
           <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={handleCloseMessages} variant="contained" color="primary">
-              Close
+            <Button
+              onClick={handleCloseMessages}
+              variant="contained"
+              color="primary"
+            >
+              Đóng
             </Button>
           </Box>
         </Box>
@@ -263,13 +619,15 @@ const Navbar: React.FC = () => {
       {/* Render ChatBox when a sender is selected */}
       {selectedSender && (
         <ChatBox
-    username={`${selectedSender.firstName} ${selectedSender.lastName || ""}`}
-    senderId={selectedSender.id} // Pass senderId for fetching messages
-    roomId={selectedSender.id} // Use senderId as roomId for this example
-    onClose={handleCloseChatBox}
-  />
+          username={`${selectedSender.firstName} ${
+            selectedSender.lastName || ""
+          }`}
+          senderId={selectedSender.id}
+          roomId={selectedSender.id}
+          onClose={handleCloseChatBox}
+        />
       )}
-    </div>
+    </>
   );
 };
 

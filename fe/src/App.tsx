@@ -1,8 +1,8 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router";
-import { privateRoutes, publicRoutes } from "./routes";
-import PrivateRoute from "./components/PrivateRoute";
 import { useSelector } from "react-redux";
+import { Route, BrowserRouter as Router, Routes } from "react-router";
+import PrivateRoute from "./components/PrivateRoute";
 import { RootState } from "./redux/store";
+import { privateRoutes, publicRoutes } from "./routes";
 
 function App() {
   const user = useSelector((state: RootState) => state.auth.user);

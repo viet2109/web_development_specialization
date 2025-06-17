@@ -143,9 +143,14 @@
   @apply scroll-smooth;
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 html {
   *::-webkit-scrollbar {
-    @apply w-2 h-2;
+    @apply w-1 h-1;
   }
 
   *::-webkit-scrollbar-thumb {
@@ -162,13 +167,13 @@ body {
 }
 .layout-container {
   display: flex;
-  height: 100vh; 
+  height: 100vh;
 }
 
 .left-bar {
   flex: 1;
   min-width: 250px;
-  background-color: #f4f4f4; 
+  background-color: #f4f4f4;
 }
 
 .main-content {
@@ -182,7 +187,6 @@ body {
   min-width: 250px;
   background-color: #f4f4f4;
 }
-
 
 @media (max-width: 768px) {
   .left-bar,

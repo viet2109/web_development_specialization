@@ -13,7 +13,7 @@ export interface User {
   phone: string;
   birthDate: string;
   bio: string;
-  avatar?: FileDto; // File object trong browser
+  avatar?: FileDto;
 }
 
 export interface Post {
@@ -26,6 +26,9 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   totalComments: number;
+  hasReacted?: boolean;
+  userReactionEmoji?: string;
+  userReactionId?: number;
 }
 
 export interface Attachment {
@@ -59,10 +62,22 @@ export interface CreateComment {
   attachmentFile?: File;
 }
 
-interface Pageable {
+export interface Pageable {
   page?: number;
   size?: number;
   sort?: string[];
+}
+
+export interface FriendshipFilter extends Pageable {
+  name?: string;
+}
+
+export interface FriendShipRequestResponse {
+  id: number;
+  sender: User;
+  receiver: User;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AttachmentWithReactions {
@@ -105,6 +120,13 @@ export interface Route {
   path: string;
   page: FC<any>;
   layout?: FC<any>;
+}
+
+export interface Friendship {
+  id: number;
+  user1: User;
+  user2: User;
+  createdAt: string;
 }
 
 export interface ReactionResponse {

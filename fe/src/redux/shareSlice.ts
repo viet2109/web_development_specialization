@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../api/api";
 
-interface PostPayload {
+export interface PostPayload {
   content: string;
- 
-  files?: File;
+  files?: File[];
+  sharedPostId?: number;
 }
-
 
 export const uploadImage = createAsyncThunk<string, File>(
   "post/uploadImage",
@@ -27,9 +26,15 @@ export const sharePost = createAsyncThunk<void, PostPayload>(
   async (payload) => {
     const formData = new FormData();
     formData.append("content", payload.content);
-    
-    if (payload.files) {
-      formData.append("files", payload.files);
+
+    if (payload.sharedPostId != null) {
+      formData.append("sharedPostId", payload.sharedPostId.toString());
+    }
+
+    if (payload.files && payload.files.length) {
+      payload.files.forEach((file) => {
+        formData.append("files", file);
+      });
     }
 
     await api.post("/posts", formData, {

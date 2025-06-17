@@ -13,9 +13,9 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/firebase-messaging-sw.js")
-      .then((registration) => {
+      .then(async (registration) => {
         console.log("Service Worker đăng ký thành công:", registration);
-        requestForToken();
+        await requestForToken();
       })
       .catch((error) => {
         console.error("Service Worker đăng ký thất bại:", error);

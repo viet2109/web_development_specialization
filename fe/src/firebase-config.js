@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage  } from "firebase/messaging";
+import { getMessaging, getToken } from "firebase/messaging";
 import { subscribeAllUser, subscribeUserTopic } from "./api/fcm";
 
 const firebaseConfig = {
@@ -15,12 +15,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const messaging = getMessaging(app);
-
+const vapidKey =
+  "BKuu7YlsHPnTsYo2ZRvccaMl61xNl8ENMFg6gau-YBnGrJ_EVfxTCpcQxrNOefvgojMlyCx7eOfDnkeHsINErSo";
 export const requestForTokenWithAuth = async () => {
   try {
     const currentToken = await getToken(messaging, {
-      vapidKey:
-        "BEy5aUd2u9ahARX-RneKnP1p1UAJlmFFCO6YYBARgdRqjIn4bjOH49d-di_rYoVjrS2n8xm7ShDv6xM1VtSlruA",
+      vapidKey: vapidKey,
     });
     if (currentToken) {
       console.log("Token nhận được:", currentToken);
@@ -39,8 +39,7 @@ export const requestForTokenWithAuth = async () => {
 export const requestForToken = async () => {
   try {
     const currentToken = await getToken(messaging, {
-      vapidKey:
-        "BEy5aUd2u9ahARX-RneKnP1p1UAJlmFFCO6YYBARgdRqjIn4bjOH49d-di_rYoVjrS2n8xm7ShDv6xM1VtSlruA",
+      vapidKey: vapidKey,
     });
     if (currentToken) {
       console.log("Token nhận được:", currentToken);
@@ -56,9 +55,5 @@ export const requestForToken = async () => {
   }
 };
 
-
-onMessage(messaging, (payload) => {
-  console.log("Thông báo đến khi ứng dụng đang foreground: ", payload);
-});
-
 export { messaging };
+

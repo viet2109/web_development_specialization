@@ -11,10 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class FriendShipRequestResponseDto {
+public class FriendShipResponseDto {
     private Long id;
-    private UserLoginResponseDto.UserInfo sender;
-    private UserLoginResponseDto.UserInfo receiver;
+    private UserLoginResponseDto.UserInfo user1;
+    private UserLoginResponseDto.UserInfo user2;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
