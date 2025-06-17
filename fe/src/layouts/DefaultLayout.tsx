@@ -14,19 +14,17 @@ function DefaultLayout(props: Props) {
   const { children } = props;
 
   return (
-    <div>
-   
-    <Navbar />
-    <div className="layout-container">
-      <div className="left-bar">
-        <LeftBar />
+     <div>
+      <Navbar />
+      <div className="layout-container" style={{ paddingTop: '50px' }}> 
+        <div className="left-bar">
+          <LeftBar />
+        </div>
+        <main className="main-content">{children}</main>
+        <div className="right-bar">
+          {/* <RightBar /> */}
+        </div>
       </div>
-      <main className="main-content">{children}</main>
-      <div className="right-bar">
-        <RightBar />
-      </div>
-    </div>
-    
     </div>
   );
 }
