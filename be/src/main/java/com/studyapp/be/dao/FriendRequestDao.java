@@ -11,5 +11,6 @@ public interface FriendRequestDao extends CrudRepository<FriendShipRequest, Long
     boolean existsBySender(User sender);
 
     boolean existsByReceiver(User receiver);
+    boolean existsBySenderIdAndReceiverId(Long senderId, Long receiverId);
 
 }

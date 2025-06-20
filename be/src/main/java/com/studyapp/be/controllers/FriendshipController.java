@@ -32,4 +32,8 @@ public class FriendshipController {
         friendService.deleteFriendship(id);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/count")
+    public long countFriends() {
+        return friendService.countFriends();
+    }
 }

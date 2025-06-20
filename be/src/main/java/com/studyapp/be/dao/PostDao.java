@@ -1,6 +1,7 @@
 package com.studyapp.be.dao;
 
 import com.studyapp.be.entities.Post;
+import com.studyapp.be.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -27,5 +28,10 @@ public interface PostDao extends CrudRepository<Post, Long>, JpaSpecificationExe
             "  COUNT(c) DESC, " +
             "  p.createdAt DESC")
     Page<Post> findRankedPostsByUser(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.creator.id = :userId ORDER BY p.createdAt DESC")
+    Page<Post> findPostsByUserId(@Param("userId") Long userId, Pageable pageable);
+    long countByCreator(User creator);
+
 
 }
