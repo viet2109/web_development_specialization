@@ -120,4 +120,10 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, size, Utils.parseSort(sort));
         return ResponseEntity.ok(commentService.getComments(parentId, postId, pageable));
     }
+    @GetMapping("/user/{userId}")
+    public Page<PostResponseDto> getPostsByUser(@PathVariable Long userId,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
+        return postService.getPostsByUserId(userId, page, size);
+    }
 }

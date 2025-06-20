@@ -58,3 +58,13 @@ export const deleteRequest = async (id: number): Promise<void> => {
     return Promise.reject(error);
   }
 };
+
+
+export const sendFriendRequest = async (receiverId: number) => {
+  const response = await api.post("/friend-requests", receiverId, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  return response.data;
+};
+

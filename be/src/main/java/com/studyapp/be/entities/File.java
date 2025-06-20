@@ -1,5 +1,7 @@
 package com.studyapp.be.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.studyapp.be.listeners.FileListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +43,7 @@ public class File {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonBackReference
     private User creator;
 
     @CreationTimestamp

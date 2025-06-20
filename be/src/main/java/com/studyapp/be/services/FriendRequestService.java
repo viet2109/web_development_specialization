@@ -93,4 +93,7 @@ public class FriendRequestService {
         spec = spec.and(FriendShipRequestSpecification.hasReceiver(securityService.getUserFromRequest().getId()));
         return friendRequestDao.findAll(spec, pageable).map(friendShipRequestMapper::entityToDto);
     }
+    public boolean isFriendRequestSent(Long senderId, Long receiverId) {
+        return friendRequestDao.existsBySenderIdAndReceiverId(senderId, receiverId);
+    }
 }

@@ -123,4 +123,46 @@ public class PostService {
         PostReaction persistedReaction = reactionDao.save(reaction);
         return reactionMapper.entityToDto(persistedReaction);
     }
+    public Page<PostResponseDto> getPostsByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Post> posts = postDao.findPostsByUserId(userId, pageable);
+
+        User currentUser = securityService.getUserFromRequest();
+
+        return posts.map(post -> {
+            PostResponseDto dto = postMapper.entityToDto(post);
+            dto.setTotalComments(postCommentDao.countByPost(post));
+            dto.setReactionSummary(postReactionDao.getReactionSummaryByPost(post));
+
+            if (currentUser != null) {
+                post.getReactions().stream()
+                        .filter(r -> r.getCreator().getId().equals(currentUser.getId()))
+                        .findFirst()
+                        .ifPresent(r -> {
+                            dto.setHasReacted(true);
+                            dto.setUserReactionEmoji(r.getEmoji());
+                            dto.setUserReactionId(r.getId());
+                        });
+            }
+
+            return dto;
+        });
+    }
+    public long countPostsByUserId(Long userId) {
+        if (userId == null) {
+            User currentUser = securityService.getUserFromRequest();
+            if (currentUser == null) {
+                throw new AppException(AppError.USER_NOT_FOUND);
+            }
+            return postDao.countByCreator(currentUser);
+        } else {
+            // Tìm user theo ID khác
+            User user = userDao.findById(userId)
+                    .orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
+            return postDao.countByCreator(user);
+        }
+    }
+
+
 }

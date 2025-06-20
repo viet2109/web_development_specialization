@@ -227,3 +227,27 @@ export interface SendMessagePayload {
   repliedTargetType?: string;
   files?: File[];
 }
+export interface UpdateUserRequest {
+  userId ?: number; // Optional, used for updating existing user
+  firstName: string;
+  lastName: string;
+  phone: string;
+  birthDate: string; 
+}
+export interface UserProfileResponse {
+  id: number;                   
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar: string | null;        
+  phone: string;                
+  birthDate: string;            
+  postCount: number;
+  friendsCount: number;
+  createdAt: string;            
+  updatedAt: string;             
+  gender: "MALE" | "FEMALE" | "OTHER"; 
+  isMe?: boolean;
+  isfriend: boolean;
+  isfriendSended?: boolean; 
+}
