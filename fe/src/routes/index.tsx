@@ -11,7 +11,7 @@ import Register from "../pages/Register";
 import SentFriendRequestsPage from "../pages/SentFriendRequestsPage";
 import Profile from "../pages/Profile";
 import { Route } from "../types";
-
+import SearchResultPage from "../pages/SearchResultPage";
 const publicRoutes: Route[] = [
   { path: routers.login, page: Login, layout: undefined },
   { path: routers.register, page: Register, layout: undefined },
@@ -41,7 +41,13 @@ const privateRoutes: Route[] = [
   path: `${routers.profile}/:userId`, 
   page: Profile,
   layout: ProfileLayout,
-}
+},
+  {
+    path: routers.search,
+    page: SearchResultPage,
+    layout: ProfileLayout,
+  }
+  
 ];
 
 export { privateRoutes, publicRoutes };

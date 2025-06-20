@@ -38,6 +38,14 @@ const authSlice = createSlice({
         ...action.payload,
       };
     },
+    updateAVTSuccess: (state, action: PayloadAction<User>) => {
+      state.user = {
+        ...action.payload,
+        avatar: action.payload.avatar ?? state.user?.avatar,
+
+      };
+      console.log("updateAVTSuccess", state.user);
+    },
     refreshTokenSuccess: (state, action: PayloadAction<string>) => {},
   },
 });
@@ -48,6 +56,7 @@ export const {
   updateUserSuccess,
   loginSuccessWithFcmToken,
   refreshTokenSuccess,
+  updateAVTSuccess
 } = authSlice.actions;
 
 export default authSlice.reducer;

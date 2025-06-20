@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -59,7 +62,7 @@ public class UserService {
         User targetUser;
         boolean isMe = false;
         boolean isFriend = false;
-        boolean isFriendRequestSent = false; // ✅ Thêm biến này
+        boolean isFriendRequestSent = false;
 
         if (userId == null || currentUser.getId().equals(userId)) {
             targetUser = currentUser;
@@ -93,7 +96,9 @@ public class UserService {
                 isFriendRequestSent
         );
     }
-
+    public List<User> searchUsers(String keyword) {
+        return userDao.searchByFullName(keyword);
+    }
 
 
 

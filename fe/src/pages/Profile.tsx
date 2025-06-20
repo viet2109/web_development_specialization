@@ -26,6 +26,8 @@ import { getMyProfile, getUserProfileById, updateUser, updateUserAvatar, uploadF
 import { UpdateUserRequest, UserProfileResponse } from "../types";
 import dayjs from "dayjs";
 import { sendFriendRequest } from "../api/friendsRequest";
+import { updateAVTSuccess } from "../redux/authSlice";
+import { useDispatch } from "react-redux";
 
 const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -36,6 +38,7 @@ const Profile: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const dispatch = useDispatch();
  useEffect(() => {
   const fetchProfile = async () => {
     setLoading(true);
@@ -112,23 +115,7 @@ const Profile: React.FC = () => {
     setAvatarFile(file); // lưu file để sau upload
     setAvatarPreview(URL.createObjectURL(file)); // hiển thị preview ngay
   };
-  const handleSaveAvatar = async () => {
-    if (!avatarFile) return;
-    try {
-      const { id } = await uploadFile(avatarFile);
-      await updateUserAvatar(id);
-      setProfile((prev) =>
-        prev ? { ...prev, avatar: avatarPreview! } : prev
-      );
-      setAvatarFile(null);       // clear sau khi lưu
-      setAvatarPreview(null);    // clear preview
-      alert("Cập nhật ảnh đại diện thành công!");
-    } catch (error) {
-      alert("Không thể cập nhật ảnh đại diện.");
-      console.error(error);
-    }
-  };
-
+ 
 
   const handleUpdate = async () => {
     if (!formData) return;
@@ -207,12 +194,15 @@ const Profile: React.FC = () => {
                     onClick={async () => {
                       try {
                         const { id } = await uploadFile(avatarFile);
-                        await updateUserAvatar(id);
+                    const newUser =     await updateUserAvatar(id);
+                          console.log("👉 updateUserAvatar newUser:", newUser);
+                          dispatch(updateAVTSuccess(newUser));
                         setProfile((prev) =>
                           prev ? { ...prev, avatar: avatarPreview! } : prev
                         );
-                        setAvatarFile(null); // reset lại sau khi upload
+                        setAvatarFile(null); 
                         alert("Cập nhật ảnh đại diện thành công!");
+                        
                       } catch (error) {
                         alert("Không thể tải ảnh lên.");
                         console.error(error);

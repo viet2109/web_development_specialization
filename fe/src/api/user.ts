@@ -1,13 +1,14 @@
-import { FileDto, UpdateUserRequest, User, UserProfileResponse } from "../types";
+import { FileDto, UpdateUserRequest, User, UserLoginResponse, UserProfileResponse } from "../types";
 import { api } from "./api";
 
 
 
 export const updateUserAvatar = async (
   avatarFileId: number
-): Promise<void> => {
+): Promise<User> => {
   try {
-    await api.put(`/profile/avatar`, { avatarFileId });
+    const response =  await api.put(`/profile/avatar`, { avatarFileId })
+     return response.data;
   } catch (error: any) {
     return Promise.reject(error);
   }
@@ -93,6 +94,20 @@ export const uploadFile = async (
       headers: {
         "Content-Type": "multipart/form-data",
       },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    return Promise.reject(error);
+  }
+}
+
+export const searchUsersByName = async (
+  keyword: string
+): Promise<UserLoginResponse[]> => {
+  try {
+    const response = await api.get("/profile/search", {
+      params: { q: keyword },
     });
 
     return response.data;

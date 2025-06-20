@@ -9,6 +9,7 @@ const routers = {
   notFound: "*",
    profile: "/profile",                     
     profileById: (id: number | string) => `/profile/${id}`,  
+  search: "/search",
 };
 
 export default routers;
