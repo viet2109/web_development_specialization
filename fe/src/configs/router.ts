@@ -10,9 +10,7 @@ const routers = {
   profile: "/profile",
   profileById: (id: number | string) => `/profile/${id}`,
   notFound: "*",
-
-   profile: "/profile",                     
-    profileById: (id: number | string) => `/profile/${id}`,  
+ 
   search: "/search",
 
 
