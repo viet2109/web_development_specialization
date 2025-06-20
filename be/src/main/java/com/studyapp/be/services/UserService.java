@@ -96,9 +96,11 @@ public class UserService {
                 isFriendRequestSent
         );
     }
+
     public List<User> searchUsers(String keyword) {
         return userDao.searchByFullName(keyword);
     }
+
 
 
 

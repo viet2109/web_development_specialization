@@ -6,10 +6,16 @@ const routers = {
   friends: "/friends",
   friendsSended: "/friends/sended",
   friendsReceived: "/friends/received",
+  verifyEmail: "/verify",
+  profile: "/profile",
+  profileById: (id: number | string) => `/profile/${id}`,
   notFound: "*",
+
    profile: "/profile",                     
     profileById: (id: number | string) => `/profile/${id}`,  
   search: "/search",
+
+
 };
 
 export default routers;

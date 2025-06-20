@@ -16,8 +16,8 @@ interface FormValues {
   password: string;
   confirmPassword: string;
   gender: Gender;
-  phone: string;
-  birthDate: string;
+  phone?: string;
+  birthDate?: string;
 }
 
 const validationSchema = yup.object({
@@ -84,8 +84,8 @@ const initialValues: FormValues = {
   password: "",
   confirmPassword: "",
   gender: "MALE",
-  phone: "",
-  birthDate: "",
+  phone: undefined,
+  birthDate: undefined,
 };
 
 const Register = () => {
@@ -94,38 +94,41 @@ const Register = () => {
     useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
-    try {
-      await api.post("/auth/signup", {
-        email: values.email,
-        password: values.password,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        gender: values.gender,
-        phone: values.phone,
-        birthDate: values.birthDate,
-      });
+const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
+  try {
+    await api.post("/auth/signup", {
+      email: values.email,
+      password: values.password,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      gender: values.gender,
+      phone: values.phone,
+      birthDate: values.birthDate,
+    });
 
-      toast.success(
-        `🎉 Đăng ký thành công! Vui lòng kiểm tra email (${values.email}) để xác thực tài khoản.`,
-        {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: true,
-          theme: "colored",
+    // Hiển thị toast với callback
+    toast.success(
+      `🎉 Đăng ký thành công! Vui lòng kiểm tra email (${values.email}) để xác thực tài khoản.`,
+      {
+        position: "top-right",
+        autoClose: 1500,
+        hideProgressBar: true,
+        theme: "colored",
+        onClose: () => {
+          navigate("/login");
         }
-      );
+      }
+    );
 
-      navigate("/login");
-    } catch (error) {
-      console.error("Registration failed:", error);
-      toast.error("Đăng ký thất bại. Vui lòng thử lại.", {
-        position: "top-center",
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  } catch (error) {
+    console.error("Registration failed:", error);
+    toast.error("Đăng ký thất bại. Vui lòng thử lại.", {
+      position: "top-center",
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl dark:shadow-gray-900/50 overflow-hidden transition-colors duration-300">

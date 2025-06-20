@@ -6,6 +6,7 @@ interface ChatRoomPayload {
   size: number;
   type?: string;
   sort?: string;
+  memberId?:number;
 }
 
 interface ChatRoomState {
@@ -20,7 +21,7 @@ const initialState: ChatRoomState = {
 
 export const fetchChatRooms = createAsyncThunk(
   "chatRoom/fetchChatRooms",
-  async ({ page, size, type, sort }: ChatRoomPayload, { rejectWithValue }) => {
+  async ({ page, size, type, sort, memberId }: ChatRoomPayload, { rejectWithValue }) => {
     try {
       const response = await api.get("/chat-rooms", {
         params: {
@@ -28,6 +29,7 @@ export const fetchChatRooms = createAsyncThunk(
           page,
           size,
           sort: sort || "createdAt,desc",
+          memberId
         },
       });
       return response.data.content; 

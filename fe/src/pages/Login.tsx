@@ -38,23 +38,18 @@ const Login = () => {
       });
       console.log("🖥️ Response received:", response.data);
 
-      if (response.data.error) {
-        throw new Error(response.data.error);
-      }
-
       const { accessToken, user } = response.data;
-      if (!accessToken || !user) {
-        throw new Error("Missing accessToken or user in response");
-      }
       dispatch(loginSuccess({ user, token: accessToken }));
       const token = await requestForTokenWithAuth();
       if (token) dispatch(loginSuccessWithFcmToken(token));
-      navigate(routers.home);
       toast.success("🎉 Đăng nhập thành công!", {
         position: "top-right",
         autoClose: 1500,
         hideProgressBar: true,
         theme: "colored",
+        onClose: () => {
+          navigate(routers.home);
+        },
       });
     } catch (error: any) {
       console.error("Login failed:", error.message, error.response?.data);
