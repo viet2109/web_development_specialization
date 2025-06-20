@@ -27,7 +27,7 @@ public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
 
-    @Value("${app.server.url}")
+    @Value("${app.fe.url}")
     private String url;
 
 

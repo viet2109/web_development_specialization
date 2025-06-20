@@ -26,7 +26,7 @@ const Posts = () => {
     queryKey: ["posts", "feed"],
     queryFn: async ({ pageParam = 0 }) => {
       try {
-        const response = await api.get(`/posts/feed?page=${pageParam}&size=5`);
+        const response = await api.get(`/posts/feed?page=${pageParam}&size=10`);
         return response.data;
       } catch (err) {
         console.error("Error fetching posts:", err);
