@@ -83,18 +83,20 @@ function HeaderSidebarRightbarLayout(props: Props) {
         <main
           className={`
             flex-1
+           
             ${hasSidebar ? "ml-0 lg:ml-80" : "ml-0"}
-            ${hasRightbar ? "mr-0 xl:mr-80" : "mr-0"}
+            ${hasRightbar ? "mr-0 xl:mr-96" : "mr-0"}
+            
           `}
         >
-          <div className="p-6 lg:p-8">{children}</div>
+          <div className=" p-6 lg:p-8">{children}</div>
         </main>
 
         {/* Right Sidebar - chỉ hiển thị khi có rightbar */}
         {hasRightbar && (
           <aside
             className={`
-            fixed inset-y-0 right-0 z-40 w-80 bg-white/90 dark:bg-gray-900/95 backdrop-blur-md border-l border-slate-200/60 dark:border-gray-700/60
+            fixed inset-y-0 right-0 z-40 w-96 bg-white/90 dark:bg-gray-900/95 backdrop-blur-md border-l border-slate-200/60 dark:border-gray-700/60
             transform transition-transform duration-300 ease-in-out
             ${
               rightbarOpen

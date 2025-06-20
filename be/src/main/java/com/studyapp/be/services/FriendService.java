@@ -56,4 +56,16 @@ public class FriendService {
     public void deleteFriendship(Long id) {
         friendDao.delete(friendDao.findById(id).orElseThrow(() -> new AppException(AppError.FRIENDSHIP_NOT_FOUND)));
     }
+    @Transactional(readOnly = true)
+    public long countFriends() {
+        User user = securityService.getUserFromRequest();
+        if (user == null) {
+            throw new AppException(AppError.USER_NOT_FOUND);
+        }
+        return friendDao.countByUserId(user.getId());
+    }
+    public boolean areFriends(Long userId1, Long userId2) {
+        return friendDao.existsByUserIds(userId1, userId2);
+    }
+
 }

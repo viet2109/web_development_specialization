@@ -1,5 +1,6 @@
 package com.studyapp.be.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.studyapp.be.enums.ActiveStatus;
 import com.studyapp.be.enums.Gender;
 import com.studyapp.be.enums.Role;
@@ -64,6 +65,8 @@ public class User {
     private String bio;
 
     @OneToOne
+    @JsonManagedReference
+
     private File avatar;
 
     @PrePersist

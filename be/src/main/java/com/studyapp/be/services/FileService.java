@@ -74,6 +74,9 @@ public class FileService {
             throw new AppException(AppError.FILE_UPLOAD_FAILED);
         }
     }
+    public File getFileById(Long id) {
+        return fileDao.findById(id).orElseThrow(() -> new AppException(AppError.FILE_NOT_FOUND));
+    }
 
 
 }

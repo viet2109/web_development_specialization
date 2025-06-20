@@ -15,6 +15,7 @@ function DefaultLayout(props: Props) {
     <HeaderSidebarRightbarLayout
       header={<Navbar />}
       sidebar={<LeftBar />}
+      
       rightbar={<RightBar />}
     >
       {children}

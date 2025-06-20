@@ -4,10 +4,12 @@ import FriendsLayout from "../layouts/FriendsLayout";
 import FriendRequestsPage from "../pages/FriendRequestsPage";
 import FriendsList from "../pages/FriendsList";
 import Home from "../pages/Home";
+import ProfileLayout from "../layouts/ProfileLayout";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import SentFriendRequestsPage from "../pages/SentFriendRequestsPage";
+import Profile from "../pages/Profile";
 import { Route } from "../types";
 
 const publicRoutes: Route[] = [
@@ -29,6 +31,17 @@ const privateRoutes: Route[] = [
     page: SentFriendRequestsPage,
     layout: FriendsLayout,
   },
+  {
+    path: routers.profile,
+    page: Profile,
+    layout: ProfileLayout
+
+  },
+  {
+  path: `${routers.profile}/:userId`, 
+  page: Profile,
+  layout: ProfileLayout,
+}
 ];
 
 export { privateRoutes, publicRoutes };
