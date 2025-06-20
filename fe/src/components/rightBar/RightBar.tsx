@@ -1,14 +1,16 @@
+import { Check, MessageCircle, UserPlus, Users, Wifi, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { ClipLoader } from "react-spinners";
 import { useAppDispatch, useAppSelector } from "../../hook/hook";
+import { fetchChatRooms } from "../../redux/chatRoomSlice";
 import {
-  fetchFriendRequests,
   acceptFriendRequest,
   declineFriendRequest,
+  fetchFriendRequests,
   resetError as resetFriendError,
 } from "../../redux/friendRequestSlice";
-import { fetchChatRooms } from "../../redux/chatRoomSlice";
-import { ClipLoader } from "react-spinners";
-import { UserPlus, MessageCircle, Check, X, Users, Wifi } from "lucide-react";
+import { RootState } from "../../redux/store";
 
 interface ChatRoom {
   id: number;
@@ -22,21 +24,28 @@ const RightBar: React.FC = () => {
   const [chatUser, setChatUser] = useState("");
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const dispatch = useAppDispatch();
-
+  const user = useSelector((state: RootState) => state.auth.user);
   const {
     requests,
     isLoading: isFriendLoading,
     error: friendError,
   } = useAppSelector((state) => state.friendRequest);
 
-  const {
-    isLoading: isChatLoading,
-    error: chatError,
-  } = useAppSelector((state) => state.chatRoom);
+  const { isLoading: isChatLoading, error: chatError } = useAppSelector(
+    (state) => state.chatRoom
+  );
 
   useEffect(() => {
     dispatch(fetchFriendRequests({ page: 0, size: 10 }));
-    dispatch(fetchChatRooms({ page: 0, size: 10, type: "PRIVATE", sort: "createdAt,desc" }))
+    dispatch(
+      fetchChatRooms({
+        page: 0,
+        size: 10,
+        type: "PRIVATE",
+        sort: "createdAt,desc",
+        memberId: user?.id,
+      })
+    )
       .unwrap()
       .then((data) => setRooms(data))
       .catch((err) => console.error("Error fetching chat rooms:", err));
@@ -96,7 +105,9 @@ const RightBar: React.FC = () => {
                     <X className="w-5 h-5 text-red-500" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-red-800 dark:text-red-300">{friendError}</p>
+                    <p className="text-sm text-red-800 dark:text-red-300">
+                      {friendError}
+                    </p>
                     <button
                       onClick={() => dispatch(resetFriendError())}
                       className="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 font-medium"
@@ -121,9 +132,7 @@ const RightBar: React.FC = () => {
                     className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="relative">
-                        
-                      </div>
+                      <div className="relative"></div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                           {request.sender.firstName} {request.sender.lastName}
@@ -186,7 +195,9 @@ const RightBar: React.FC = () => {
                     <X className="w-5 h-5 text-red-500" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-red-800 dark:text-red-300">{chatError}</p>
+                    <p className="text-sm text-red-800 dark:text-red-300">
+                      {chatError}
+                    </p>
                     <button
                       onClick={() => setRooms([])}
                       className="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 font-medium"
@@ -224,7 +235,9 @@ const RightBar: React.FC = () => {
                         {room.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {room.type === "PRIVATE" ? "Private Chat" : "Group Chat"}
+                        {room.type === "PRIVATE"
+                          ? "Private Chat"
+                          : "Group Chat"}
                       </p>
                     </div>
                     <div className="flex-shrink-0">

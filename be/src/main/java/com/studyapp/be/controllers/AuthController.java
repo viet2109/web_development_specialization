@@ -27,7 +27,7 @@ public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
 
-    @Value("${app.server.url}")
+    @Value("${app.fe.url}")
     private String url;
 
 
@@ -50,7 +50,7 @@ public class AuthController {
             @RequestBody @Valid UserSignUpRequest userSignUpRequest) {
         UserLoginResponseDto.UserInfo user = authService.signUp(userSignUpRequest);
 
-        String verificationUrl = url + "/auth/verify?token="
+        String verificationUrl = url + "/verify?token="
 
                 + authService.createVerificationToken(user.getId());
         emailService.sendSimpleMessage(userSignUpRequest.getEmail(), "Verify account",
@@ -66,7 +66,7 @@ public class AuthController {
             summary = "Verify Email Token",
             description = "Verifies the user's email address using the provided verification token."
     )
-    @GetMapping("/verify")
+    @PutMapping("/verify")
     public ResponseEntity<?> verifyEmailToken(
             @Parameter(description = "Verification token", required = true)
             @RequestParam String token) {

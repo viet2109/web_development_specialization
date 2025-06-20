@@ -19,7 +19,7 @@ class WebSocketService {
     this.client = new Client({
       webSocketFactory: () =>
         new SockJS(
-          import.meta.env.VITE_BASE_API || "https://java-app-6euq.onrender.com"
+          `${import.meta.env.VITE_BASE_API || "https://java-app-6euq.onrender.com"}/ws`
         ),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
