@@ -24,6 +24,7 @@ import MessengerUI from "./Messages";
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+const [searchQuery, setSearchQuery] = useState("");
 
   const [openMessenger, setOpenMessenger] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -47,6 +48,13 @@ const Navbar: React.FC = () => {
     setSelectedContact(contact);
     setOpenMessenger(false);
   };
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (searchQuery.trim()) {
+    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    setSearchQuery("");
+  }
+};
 
   useEffect(() => {
     if (currentUser?.id) {
@@ -92,11 +100,20 @@ const Navbar: React.FC = () => {
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
               size={16}
             />
-            <input
-              type="text"
-              placeholder="Tìm kiếm trên buckety..."
-              className="w-full pl-9 pr-4 py-2 text-sm bg-slate-100 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-            />
+            <form onSubmit={handleSearch} className="relative w-full">
+  <Search
+    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
+    size={16}
+  />
+  <input
+    type="text"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    placeholder="Tìm kiếm trên buckety..."
+    className="w-full pl-9 pr-4 py-2 text-sm bg-slate-100 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+  />
+</form>
+
           </div>
         </div>
 
